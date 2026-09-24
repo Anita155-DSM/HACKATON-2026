@@ -79,7 +79,7 @@ const crearAdminInicial = async () => {
     role: 'admin',
     isEmailVerified: true,
   });
-  console.log(`Usuario admin creado: ${email}`);
+  console.log(`user admin creado: ${email}`);
 };
 
 // Función para conectar a la base de datos, sincronizar tablas y levantar el servidor

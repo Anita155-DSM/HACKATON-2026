@@ -31,7 +31,7 @@ export default function Profile() {
         {/* Tarjeta lateral con avatar */}
         <Card className="md:col-span-1 flex flex-col items-center justify-center p-6 text-center">
           <FaUserCircle className="text-8xl text-gray-300 mb-4" />
-          <h2 className="text-xl font-bold text-gray-800">{user?.nombre || "Usuario"}</h2>
+          <h2 className="text-xl font-bold text-gray-800">{user?.nombre || "user"}</h2>
           <span className="mt-2 px-3 py-1 bg-blue-100 text-blue-700 text-xs font-semibold rounded-full">
             {user?.rol || "Sin Rol"}
           </span>

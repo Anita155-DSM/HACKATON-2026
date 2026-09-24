@@ -19,36 +19,36 @@ const REQUIRE_EMAIL_VERIFICATION = process.env.REQUIRE_EMAIL_VERIFICATION === 't
 const EMAIL_VERIFICATION_HOURS = parseInt(process.env.EMAIL_VERIFICATION_HOURS, 10) || 24;
 const PASSWORD_RESET_MINUTES = parseInt(process.env.PASSWORD_RESET_MINUTES, 10) || 30;
 
-// Hash dummy para que el login tarde lo mismo exista o no el usuario
+// Hash dummy para que el login tarde lo mismo exista o no el user
 const DUMMY_HASH = bcrypt.hashSync('dummy-password', 10);
 const MENSAJE_EMAIL_GENERICO = 'Si el email está registrado, vas a recibir un correo con las instrucciones';
 
 // Solo los campos que puede ver el propio dueño de la cuenta (o un admin)
-const datosPublicosUsuario = (usuario) => ({
-  id: usuario.id,
-  firstName: usuario.firstName,
-  lastName: usuario.lastName,
-  email: usuario.email,
-  role: usuario.role,
-  isActive: usuario.isActive,
-  isEmailVerified: usuario.isEmailVerified,
-  lastLoginAt: usuario.lastLoginAt,
-  createdAt: usuario.createdAt,
+const datosPublicosUser = (user) => ({
+  id: user.id,
+  firstName: user.firstName,
+  lastName: user.lastName,
+  email: user.email,
+  role: user.role,
+  isActive: user.isActive,
+  isEmailVerified: user.isEmailVerified,
+  lastLoginAt: user.lastLoginAt,
+  createdAt: user.createdAt,
 });
 
-const generarAccessToken = (usuario) =>
-  jwt.sign({ sub: usuario.id, role: usuario.role, tv: usuario.tokenVersion }, JWT_ACCESS_SECRET, {
+const generarAccessToken = (user) =>
+  jwt.sign({ sub: user.id, role: user.role, tv: user.tokenVersion }, JWT_ACCESS_SECRET, {
     expiresIn: JWT_ACCESS_EXPIRES_IN,
   });
 
-const generarRefreshToken = (usuario) =>
-  jwt.sign({ sub: usuario.id, tv: usuario.tokenVersion }, JWT_REFRESH_SECRET, {
+const generarRefreshToken = (user) =>
+  jwt.sign({ sub: user.id, tv: user.tokenVersion }, JWT_REFRESH_SECRET, {
     expiresIn: JWT_REFRESH_EXPIRES_IN,
   });
 
-const generarTokensAuth = (usuario) => ({
-  accessToken: generarAccessToken(usuario),
-  refreshToken: generarRefreshToken(usuario),
+const generarTokensAuth = (user) => ({
+  accessToken: generarAccessToken(user),
+  refreshToken: generarRefreshToken(user),
   tokenType: 'Bearer',
   expiresIn: JWT_ACCESS_EXPIRES_IN,
 });
@@ -60,12 +60,12 @@ const generarTokenAleatorio = () => {
   return { raw, hashed: hashearToken(raw) };
 };
 
-const enviarVerificacionEmail = async (usuario) => {
+const enviarVerificacionEmail = async (user) => {
   const { raw, hashed } = generarTokenAleatorio();
-  usuario.emailVerificationToken = hashed;
-  usuario.emailVerificationExpires = new Date(Date.now() + EMAIL_VERIFICATION_HOURS * 60 * 60 * 1000);
-  await usuario.save();
-  enviarMailVerificacion(usuario.email, usuario.firstName || 'usuario/a', raw, EMAIL_VERIFICATION_HOURS); // sin await: no bloquea la respuesta
+  user.emailVerificationToken = hashed;
+  user.emailVerificationExpires = new Date(Date.now() + EMAIL_VERIFICATION_HOURS * 60 * 60 * 1000);
+  await user.save();
+  enviarMailVerificacion(user.email, user.firstName || 'user/a', raw, EMAIL_VERIFICATION_HOURS); // sin await: no bloquea la respuesta
 };
 
 // POST /api/auth/register
@@ -78,29 +78,29 @@ export const register = async (req, res) => {
       return res.status(409).json({ exito: false, mensaje: 'El email ya está registrado' });
     }
 
-    const usuario = await User.create({
+    const user = await User.create({
       firstName,
       lastName,
       email,
       password: await bcrypt.hash(password, BCRYPT_ROUNDS),
     });
-    await enviarVerificacionEmail(usuario);
+    await enviarVerificacionEmail(user);
 
     if (REQUIRE_EMAIL_VERIFICATION) {
       return res.status(201).json({
         exito: true,
         mensaje: 'Registro exitoso. Revisá tu email para verificar la cuenta',
-        data: { usuario: datosPublicosUsuario(usuario) },
+        data: { user: datosPublicosUser(user) },
       });
     }
 
     return res.status(201).json({
       exito: true,
       mensaje: 'Registro exitoso',
-      data: { usuario: datosPublicosUsuario(usuario), ...generarTokensAuth(usuario) },
+      data: { user: datosPublicosUser(user), ...generarTokensAuth(user) },
     });
   } catch (error) {
-    console.error('Error al registrar usuario:', error.message);
+    console.error('Error al registrar user:', error.message);
     res.status(500).json({ exito: false, mensaje: 'Error interno del servidor.' });
   }
 };
@@ -109,26 +109,26 @@ export const register = async (req, res) => {
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
-    const usuario = await User.findOne({ where: { email: String(email).toLowerCase().trim() } });
-    const esValida = await bcrypt.compare(password, usuario ? usuario.password : DUMMY_HASH);
+    const user = await User.findOne({ where: { email: String(email).toLowerCase().trim() } });
+    const esValida = await bcrypt.compare(password, user ? user.password : DUMMY_HASH);
 
-    if (!usuario || !esValida) {
+    if (!user || !esValida) {
       return res.status(401).json({ exito: false, mensaje: 'Email o contraseña incorrectos' });
     }
-    if (!usuario.isActive) {
+    if (!user.isActive) {
       return res.status(403).json({ exito: false, mensaje: 'La cuenta está desactivada' });
     }
-    if (REQUIRE_EMAIL_VERIFICATION && !usuario.isEmailVerified) {
+    if (REQUIRE_EMAIL_VERIFICATION && !user.isEmailVerified) {
       return res.status(403).json({ exito: false, mensaje: 'Debés verificar tu email antes de iniciar sesión' });
     }
 
-    usuario.lastLoginAt = new Date();
-    await usuario.save();
+    user.lastLoginAt = new Date();
+    await user.save();
 
     return res.status(200).json({
       exito: true,
       mensaje: 'Inicio de sesión exitoso',
-      data: { usuario: datosPublicosUsuario(usuario), ...generarTokensAuth(usuario) },
+      data: { user: datosPublicosUser(user), ...generarTokensAuth(user) },
     });
   } catch (error) {
     console.error('Error en login:', error.message);
@@ -146,12 +146,12 @@ export const refresh = async (req, res) => {
       return res.status(401).json({ exito: false, mensaje: 'Refresh token inválido o expirado' });
     }
 
-    const usuario = await User.findByPk(payload.sub);
-    if (!usuario || !usuario.isActive || usuario.tokenVersion !== payload.tv) {
+    const user = await User.findByPk(payload.sub);
+    if (!user || !user.isActive || user.tokenVersion !== payload.tv) {
       return res.status(401).json({ exito: false, mensaje: 'Refresh token inválido o expirado' });
     }
 
-    return res.status(200).json({ exito: true, mensaje: 'Token renovado', data: generarTokensAuth(usuario) });
+    return res.status(200).json({ exito: true, mensaje: 'Token renovado', data: generarTokensAuth(user) });
   } catch (error) {
     console.error('Error al renovar token:', error.message);
     res.status(500).json({ exito: false, mensaje: 'Error interno del servidor.' });
@@ -161,9 +161,9 @@ export const refresh = async (req, res) => {
 // POST /api/auth/logout  (invalida los tokens en todos los dispositivos)
 export const logout = async (req, res) => {
   try {
-    const usuario = await User.findByPk(req.user.id);
-    usuario.tokenVersion += 1;
-    await usuario.save();
+    const user = await User.findByPk(req.user.id);
+    user.tokenVersion += 1;
+    await user.save();
     res.status(200).json({ exito: true, mensaje: 'Sesión cerrada correctamente' });
   } catch (error) {
     console.error('Error en logout:', error.message);
@@ -173,26 +173,26 @@ export const logout = async (req, res) => {
 
 // GET /api/auth/me
 export const me = async (req, res) => {
-  res.status(200).json({ exito: true, data: { usuario: req.user } });
+  res.status(200).json({ exito: true, data: { user: req.user } });
 };
 
 // POST /api/auth/verify-email { token }  |  GET /api/auth/verify-email?token=...
 export const verifyEmail = async (req, res) => {
   try {
     const token = req.body?.token || req.query.token;
-    const usuario = await User.findOne({
+    const user = await User.findOne({
       where: { emailVerificationToken: hashearToken(token), emailVerificationExpires: { [Op.gt]: new Date() } },
     });
-    if (!usuario) {
+    if (!user) {
       return res.status(400).json({ exito: false, mensaje: 'El link de verificación es inválido o expiró' });
     }
 
-    usuario.isEmailVerified = true;
-    usuario.emailVerificationToken = null;
-    usuario.emailVerificationExpires = null;
-    await usuario.save();
+    user.isEmailVerified = true;
+    user.emailVerificationToken = null;
+    user.emailVerificationExpires = null;
+    await user.save();
 
-    enviarMailBienvenida(usuario.email, usuario.firstName || 'usuario/a');
+    enviarMailBienvenida(user.email, user.firstName || 'user/a');
     res.status(200).json({ exito: true, mensaje: 'Email verificado correctamente' });
   } catch (error) {
     console.error('Error al verificar email:', error.message);
@@ -203,8 +203,8 @@ export const verifyEmail = async (req, res) => {
 // POST /api/auth/resend-verification  { email }
 export const resendVerification = async (req, res) => {
   try {
-    const usuario = await User.findOne({ where: { email: String(req.body.email).toLowerCase().trim() } });
-    if (usuario && usuario.isActive && !usuario.isEmailVerified) await enviarVerificacionEmail(usuario);
+    const user = await User.findOne({ where: { email: String(req.body.email).toLowerCase().trim() } });
+    if (user && user.isActive && !user.isEmailVerified) await enviarVerificacionEmail(user);
     res.status(200).json({ exito: true, mensaje: MENSAJE_EMAIL_GENERICO });
   } catch (error) {
     console.error('Error al reenviar verificación:', error.message);
@@ -215,14 +215,14 @@ export const resendVerification = async (req, res) => {
 // POST /api/auth/forgot-password  { email }
 export const forgotPassword = async (req, res) => {
   try {
-    const usuario = await User.findOne({ where: { email: String(req.body.email).toLowerCase().trim() } });
+    const user = await User.findOne({ where: { email: String(req.body.email).toLowerCase().trim() } });
 
-    if (usuario && usuario.isActive) {
+    if (user && user.isActive) {
       const { raw, hashed } = generarTokenAleatorio();
-      usuario.passwordResetToken = hashed;
-      usuario.passwordResetExpires = new Date(Date.now() + PASSWORD_RESET_MINUTES * 60 * 1000);
-      await usuario.save();
-      enviarMailRecuperacion(usuario.email, usuario.firstName || 'usuario/a', raw, PASSWORD_RESET_MINUTES);
+      user.passwordResetToken = hashed;
+      user.passwordResetExpires = new Date(Date.now() + PASSWORD_RESET_MINUTES * 60 * 1000);
+      await user.save();
+      enviarMailRecuperacion(user.email, user.firstName || 'user/a', raw, PASSWORD_RESET_MINUTES);
     }
     // Siempre la misma respuesta: no revelamos qué emails existen
     res.status(200).json({ exito: true, mensaje: MENSAJE_EMAIL_GENERICO });
@@ -235,21 +235,21 @@ export const forgotPassword = async (req, res) => {
 // POST /api/auth/reset-password  { token, password, confirmPassword }
 export const resetPassword = async (req, res) => {
   try {
-    const usuario = await User.findOne({
+    const user = await User.findOne({
       where: { passwordResetToken: hashearToken(req.body.token), passwordResetExpires: { [Op.gt]: new Date() } },
     });
-    if (!usuario) {
+    if (!user) {
       return res.status(400).json({ exito: false, mensaje: 'El link de recuperación es inválido o expiró' });
     }
 
-    usuario.password = await bcrypt.hash(req.body.password, BCRYPT_ROUNDS);
-    usuario.passwordResetToken = null;
-    usuario.passwordResetExpires = null;
-    usuario.isEmailVerified = true; // si pudo abrir el link, el email es suyo
-    usuario.tokenVersion += 1; // cierra todas las sesiones
-    await usuario.save();
+    user.password = await bcrypt.hash(req.body.password, BCRYPT_ROUNDS);
+    user.passwordResetToken = null;
+    user.passwordResetExpires = null;
+    user.isEmailVerified = true; // si pudo abrir el link, el email es suyo
+    user.tokenVersion += 1; // cierra todas las sesiones
+    await user.save();
 
-    enviarMailPasswordCambiada(usuario.email, usuario.firstName || 'usuario/a');
+    enviarMailPasswordCambiada(user.email, user.firstName || 'user/a');
     res.status(200).json({ exito: true, mensaje: 'Contraseña restablecida. Ya podés iniciar sesión' });
   } catch (error) {
     console.error('Error al restablecer contraseña:', error.message);
@@ -260,21 +260,21 @@ export const resetPassword = async (req, res) => {
 // PATCH /api/auth/change-password  { currentPassword, newPassword, confirmPassword }
 export const changePassword = async (req, res) => {
   try {
-    const usuario = await User.findByPk(req.user.id);
-    if (!(await bcrypt.compare(req.body.currentPassword, usuario.password))) {
+    const user = await User.findByPk(req.user.id);
+    if (!(await bcrypt.compare(req.body.currentPassword, user.password))) {
       return res.status(400).json({ exito: false, mensaje: 'La contraseña actual es incorrecta' });
     }
 
-    usuario.password = await bcrypt.hash(req.body.newPassword, BCRYPT_ROUNDS);
-    usuario.tokenVersion += 1;
-    await usuario.save();
+    user.password = await bcrypt.hash(req.body.newPassword, BCRYPT_ROUNDS);
+    user.tokenVersion += 1;
+    await user.save();
 
-    enviarMailPasswordCambiada(usuario.email, usuario.firstName || 'usuario/a');
+    enviarMailPasswordCambiada(user.email, user.firstName || 'user/a');
     // Devolvemos tokens nuevos para que esta sesión siga activa
     res.status(200).json({
       exito: true,
       mensaje: 'Contraseña actualizada',
-      data: { usuario: datosPublicosUsuario(usuario), ...generarTokensAuth(usuario) },
+      data: { user: datosPublicosUser(user), ...generarTokensAuth(user) },
     });
   } catch (error) {
     console.error('Error al cambiar contraseña:', error.message);

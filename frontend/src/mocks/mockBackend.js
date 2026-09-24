@@ -31,16 +31,16 @@ mock.onGet('/auth/me').reply((config) => {
   return [401, { mensaje: "Token inválido o expirado" }];
 });
 
-// 3. Mocks de Usuarios
+// 3. Mocks de users
 mock.onGet('/users').reply(200, [
   { id: 1, nombre: "Juan Pérez", email: "juan@mail.com", rol: "Administrador" },
-  { id: 2, nombre: "Ana Gómez", email: "ana@mail.com", rol: "Usuario" }
+  { id: 2, nombre: "Ana Gómez", email: "ana@mail.com", rol: "user" }
 ]);
 
-mock.onPost('/users').reply(200, { mensaje: "Usuario creado con éxito" });
-// Mock para simular la actualización de un usuario (PUT a /users/:id)
-mock.onPut(/\/users\/\d+/).reply(200, { mensaje: "Usuario actualizado con éxito" });
-// Mock para simular la eliminación de un usuario (DELETE a /users/:id)
-mock.onDelete(/\/users\/\d+/).reply(200, { mensaje: "Usuario eliminado con éxito" });
+mock.onPost('/users').reply(200, { mensaje: "user creado con éxito" });
+// Mock para simular la actualización de un user (PUT a /users/:id)
+mock.onPut(/\/users\/\d+/).reply(200, { mensaje: "user actualizado con éxito" });
+// Mock para simular la eliminación de un user (DELETE a /users/:id)
+mock.onDelete(/\/users\/\d+/).reply(200, { mensaje: "user eliminado con éxito" });
 
 export default mock;

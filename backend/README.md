@@ -1,6 +1,6 @@
 # Hackathon Backend PostgreSQL
 
-API base para proyectos de hackatón y aplicaciones con autenticación, usuarios, roles, validaciones y envío de emails. Esta versión ya está adaptada al código actual del proyecto y refleja la estructura real que existe en el repositorio.
+API base para proyectos de hackatón y aplicaciones con autenticación, users, roles, validaciones y envío de emails. Esta versión ya está adaptada al código actual del proyecto y refleja la estructura real que existe en el repositorio.
 
 ## Stack
 
@@ -104,7 +104,7 @@ ADMIN_LAST_NAME=Sistema
 
 - Si `DATABASE_URL` existe, se usa primero.
 - Si no hay SMTP configurado, los emails se imprimen en consola en modo desarrollo.
-- Si `ADMIN_EMAIL` y `ADMIN_PASSWORD` están definidos, se crea un usuario admin al iniciar la app.
+- Si `ADMIN_EMAIL` y `ADMIN_PASSWORD` están definidos, se crea un user admin al iniciar la app.
 - `DB_SYNC` puede ser:
   - `alter` (por defecto): ajusta esquema automáticamente
   - `force`: borra y recrea tablas
@@ -180,11 +180,11 @@ Todas las respuestas siguen el formato:
 | Método | Ruta | Auth | Descripción |
 | --- | --- | --- | --- |
 | GET | `/api/health` | No | Verifica que la API esté funcionando |
-| POST | `/api/auth/register` | No | Registro de usuario y envío de mail de verificación |
+| POST | `/api/auth/register` | No | Registro de user y envío de mail de verificación |
 | POST | `/api/auth/login` | No | Login, devuelve `accessToken` y `refreshToken` |
 | POST | `/api/auth/refresh` | No | Renueva tokens con `refreshToken` |
-| POST | `/api/auth/logout` | Sí | Invalida sesión actual y todos los tokens del usuario |
-| GET | `/api/auth/me` | Sí | Devuelve los datos del usuario autenticado |
+| POST | `/api/auth/logout` | Sí | Invalida sesión actual y todos los tokens del user |
+| GET | `/api/auth/me` | Sí | Devuelve los datos del user autenticado |
 | POST | `/api/auth/verify-email` | No | Verifica email por body `{ token }` |
 | GET | `/api/auth/verify-email` | No | Verifica email por query `?token=` |
 | POST | `/api/auth/resend-verification` | No | Reenvía email de verificación |
@@ -192,21 +192,21 @@ Todas las respuestas siguen el formato:
 | POST | `/api/auth/reset-password` | No | Restaura contraseña con token |
 | PATCH | `/api/auth/change-password` | Sí | Cambia contraseña pidiendo la actual |
 
-### Usuarios
+### users
 
 | Método | Ruta | Auth | Descripción |
 | --- | --- | --- | --- |
 | PATCH | `/api/users/me` | Sí | Actualiza nombre y apellido del perfil propio |
-| GET | `/api/users?page=1&limit=10&search=juan&role=user` | Admin | Lista paginada de usuarios |
-| GET | `/api/users/:id` | Admin | Obtiene un usuario por id |
+| GET | `/api/users?page=1&limit=10&search=juan&role=user` | Admin | Lista paginada de users |
+| GET | `/api/users/:id` | Admin | Obtiene un user por id |
 | PATCH | `/api/users/:id/role` | Admin | Cambia el rol (`user` / `admin`) |
-| PATCH | `/api/users/:id/status` | Admin | Activa o desactiva un usuario |
-| DELETE | `/api/users/:id` | Admin | Elimina un usuario |
+| PATCH | `/api/users/:id/status` | Admin | Activa o desactiva un user |
+| DELETE | `/api/users/:id` | Admin | Elimina un user |
 
 ### Autorización
 
 - `Authorization: Bearer <accessToken>` en endpoints protegidos.
-- El middleware `authorize('admin')` restringe rutas a usuarios con rol admin.
+- El middleware `authorize('admin')` restringe rutas a users con rol admin.
 - El middleware `requireVerifiedEmail` puede usarse para rutas que exigen email verificado.
 
 ## Seguridad implementada

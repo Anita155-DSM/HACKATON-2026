@@ -1,7 +1,7 @@
 {
   "name": "hackathon-backend-postgres",
   "version": "1.0.0",
-  "description": "Base de backend para hackatón: auth, emails y usuarios (Express + Sequelize + PostgreSQL)",
+  "description": "Base de backend para hackatón: auth, emails y users (Express + Sequelize + PostgreSQL)",
   "main": "app.js",
   "type": "module",
   "scripts": {

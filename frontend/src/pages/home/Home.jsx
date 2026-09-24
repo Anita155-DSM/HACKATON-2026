@@ -10,7 +10,7 @@ export default function Home() {
   // Datos simulados para las métricas del dashboard
   const metricas = [
     {
-      titulo: "Usuarios Totales",
+      titulo: "users Totales",
       valor: "1,250",
       icono: <FaUsers className="text-blue-500 text-2xl" />,
       fondo: "bg-blue-50",
@@ -33,20 +33,20 @@ export default function Home() {
   const actividadReciente = [
     {
       id: 1,
-      accion: "Nuevo usuario registrado",
-      usuario: "Juan Pérez",
+      accion: "Nuevo user registrado",
+      user: "Juan Pérez",
       fecha: "Hace 5 min",
     },
     {
       id: 2,
       accion: "Actualización de sistema",
-      usuario: "Admin",
+      user: "Admin",
       fecha: "Hace 2 horas",
     },
     {
       id: 3,
       accion: "Tarea completada",
-      usuario: "María Gómez",
+      user: "María Gómez",
       fecha: "Hace 5 horas",
     },
   ];
@@ -96,7 +96,7 @@ export default function Home() {
             <thead>
               <tr className="border-b border-gray-200 text-sm text-gray-500">
                 <th className="py-3 px-4 font-medium">Acción</th>
-                <th className="py-3 px-4 font-medium">Usuario</th>
+                <th className="py-3 px-4 font-medium">user</th>
                 <th className="py-3 px-4 font-medium text-right">Fecha</th>
               </tr>
             </thead>
@@ -108,7 +108,7 @@ export default function Home() {
                 >
                   <td className="py-3 px-4">{item.accion}</td>
                   <td className="py-3 px-4 font-medium text-gray-900">
-                    {item.usuario}
+                    {item.user}
                   </td>
                   <td className="py-3 px-4 text-right text-gray-500">
                     {item.fecha}

@@ -1,16 +1,16 @@
 import { Op } from 'sequelize';
 import { User } from '../models/user.models.js';
 
-const datosPublicosUsuario = (usuario) => ({
-  id: usuario.id,
-  firstName: usuario.firstName,
-  lastName: usuario.lastName,
-  email: usuario.email,
-  role: usuario.role,
-  isActive: usuario.isActive,
-  isEmailVerified: usuario.isEmailVerified,
-  lastLoginAt: usuario.lastLoginAt,
-  createdAt: usuario.createdAt,
+const datosPublicosUser = (user) => ({
+  id: user.id,
+  firstName: user.firstName,
+  lastName: user.lastName,
+  email: user.email,
+  role: user.role,
+  isActive: user.isActive,
+  isEmailVerified: user.isEmailVerified,
+  lastLoginAt: user.lastLoginAt,
+  createdAt: user.createdAt,
 });
 
 const ensureNotSelf = (req, res) => {
@@ -24,15 +24,15 @@ const ensureNotSelf = (req, res) => {
 // PATCH /api/users/me
 export const updateMe = async (req, res) => {
   try {
-    const usuario = await User.findByPk(req.user.id);
-    if (!usuario) return res.status(404).json({ exito: false, mensaje: 'Usuario no encontrado' });
+    const user = await User.findByPk(req.user.id);
+    if (!user) return res.status(404).json({ exito: false, mensaje: 'user no encontrado' });
 
     ['firstName', 'lastName'].forEach((campo) => {
-      if (req.body[campo] !== undefined) usuario[campo] = req.body[campo];
+      if (req.body[campo] !== undefined) user[campo] = req.body[campo];
     });
-    await usuario.save();
+    await user.save();
 
-    res.status(200).json({ exito: true, mensaje: 'Perfil actualizado', data: { usuario: datosPublicosUsuario(usuario) } });
+    res.status(200).json({ exito: true, mensaje: 'Perfil actualizado', data: { user: datosPublicosUser(user) } });
   } catch (error) {
     console.error('Error al actualizar el perfil:', error.message);
     res.status(500).json({ exito: false, mensaje: 'Error interno del servidor.' });
@@ -63,12 +63,12 @@ export const list = async (req, res) => {
     res.status(200).json({
       exito: true,
       data: {
-        items: rows.map(datosPublicosUsuario),
+        items: rows.map(datosPublicosuser),
         pagination: { page, limit, total: count, totalPages: Math.ceil(count / limit) },
       },
     });
   } catch (error) {
-    console.error('Error al listar usuarios:', error.message);
+    console.error('Error al listar users:', error.message);
     res.status(500).json({ exito: false, mensaje: 'Error interno del servidor.' });
   }
 };
@@ -76,11 +76,11 @@ export const list = async (req, res) => {
 // GET /api/users/:id   (admin)
 export const getById = async (req, res) => {
   try {
-    const usuario = await User.findByPk(req.params.id);
-    if (!usuario) return res.status(404).json({ exito: false, mensaje: 'Usuario no encontrado' });
-    res.status(200).json({ exito: true, data: { usuario: datosPublicosUsuario(usuario) } });
+    const user = await User.findByPk(req.params.id);
+    if (!user) return res.status(404).json({ exito: false, mensaje: 'user no encontrado' });
+    res.status(200).json({ exito: true, data: { user: datosPublicosUser(user) } });
   } catch (error) {
-    console.error('Error al obtener usuario:', error.message);
+    console.error('Error al obtener user:', error.message);
     res.status(500).json({ exito: false, mensaje: 'Error interno del servidor.' });
   }
 };
@@ -90,13 +90,13 @@ export const updateRole = async (req, res) => {
   try {
     if (ensureNotSelf(req, res)) return;
 
-    const usuario = await User.findByPk(req.params.id);
-    if (!usuario) return res.status(404).json({ exito: false, mensaje: 'Usuario no encontrado' });
+    const user = await User.findByPk(req.params.id);
+    if (!user) return res.status(404).json({ exito: false, mensaje: 'user no encontrado' });
 
-    usuario.role = req.body.role;
-    await usuario.save();
+    user.role = req.body.role;
+    await user.save();
 
-    res.status(200).json({ exito: true, mensaje: 'Rol actualizado', data: { usuario: datosPublicosUsuario(usuario) } });
+    res.status(200).json({ exito: true, mensaje: 'Rol actualizado', data: { user: datosPublicosUser(user) } });
   } catch (error) {
     console.error('Error al actualizar rol:', error.message);
     res.status(500).json({ exito: false, mensaje: 'Error interno del servidor.' });
@@ -108,20 +108,20 @@ export const updateStatus = async (req, res) => {
   try {
     if (ensureNotSelf(req, res)) return;
 
-    const usuario = await User.findByPk(req.params.id);
-    if (!usuario) return res.status(404).json({ exito: false, mensaje: 'Usuario no encontrado' });
+    const user = await User.findByPk(req.params.id);
+    if (!user) return res.status(404).json({ exito: false, mensaje: 'user no encontrado' });
 
-    usuario.isActive = req.body.isActive;
-    if (!req.body.isActive) usuario.tokenVersion += 1; // lo desloguea
-    await usuario.save();
+    user.isActive = req.body.isActive;
+    if (!req.body.isActive) user.tokenVersion += 1; // lo desloguea
+    await user.save();
 
     res.status(200).json({
       exito: true,
-      mensaje: req.body.isActive ? 'Usuario activado' : 'Usuario desactivado',
-      data: { usuario: datosPublicosUsuario(usuario) },
+      mensaje: req.body.isActive ? 'user activado' : 'user desactivado',
+      data: { user: datosPublicosUser(user) },
     });
   } catch (error) {
-    console.error('Error al actualizar estado del usuario:', error.message);
+    console.error('Error al actualizar estado del user:', error.message);
     res.status(500).json({ exito: false, mensaje: 'Error interno del servidor.' });
   }
 };
@@ -132,11 +132,11 @@ export const remove = async (req, res) => {
     if (ensureNotSelf(req, res)) return;
 
     const eliminado = await User.destroy({ where: { id: req.params.id } });
-    if (!eliminado) return res.status(404).json({ exito: false, mensaje: 'Usuario no encontrado' });
+    if (!eliminado) return res.status(404).json({ exito: false, mensaje: 'user no encontrado' });
 
-    res.status(200).json({ exito: true, mensaje: 'Usuario eliminado' });
+    res.status(200).json({ exito: true, mensaje: 'user eliminado' });
   } catch (error) {
-    console.error('Error al eliminar usuario:', error.message);
+    console.error('Error al eliminar user:', error.message);
     res.status(500).json({ exito: false, mensaje: 'Error interno del servidor.' });
   }
 };

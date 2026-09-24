@@ -41,7 +41,7 @@ clienteAxios.interceptors.response.use(
       // Borramos el token corrupto/vencido
       localStorage.removeItem('token');
       
-      // Redirigimos al usuario al login forzosamente
+      // Redirigimos al user al login forzosamente
       // Usamos window.location porque estamos fuera del contexto de react-router-dom
       if (window.location.pathname !== '/login') {
         window.location.href = '/login';

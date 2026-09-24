@@ -34,15 +34,15 @@ export const authenticate = async (req, res, next) => {
 
   try {
     const user = await User.findByPk(payload.sub);
-    if (!user) return res.status(401).json({ exito: false, mensaje: 'Usuario no encontrado' });
+    if (!user) return res.status(401).json({ exito: false, mensaje: 'user no encontrado' });
     if (!user.isActive) return res.status(403).json({ exito: false, mensaje: 'La cuenta está desactivada' });
     if (user.tokenVersion !== payload.tv) {
       return res.status(401).json({ exito: false, mensaje: 'Sesión expirada, iniciá sesión nuevamente' });
     }
 
-    const datosUsuario = user.get({ plain: true });
-    SENSITIVE_FIELDS.forEach((campo) => delete datosUsuario[campo]);
-    req.user = datosUsuario;
+    const datosuser = user.get({ plain: true });
+    SENSITIVE_FIELDS.forEach((campo) => delete datosuser[campo]);
+    req.user = datosuser;
     next();
   } catch (error) {
     console.error('Error en authenticate:', error.message);

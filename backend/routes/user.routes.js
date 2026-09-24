@@ -8,7 +8,7 @@ const router = Router();
 
 router.use(authenticate);
 
-// Usuario logueado
+// user logueado
 router.patch('/me', rules.updateMe, ctrl.updateMe);
 
 // Solo admin

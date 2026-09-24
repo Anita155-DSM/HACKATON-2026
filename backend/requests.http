@@ -26,7 +26,7 @@ Content-Type: application/json
 
 { "email": "juan@mail.com", "password": "Clave1234" }
 
-### Usuario actual
+### user actual
 GET {{base}}/auth/me
 Authorization: Bearer {{access}}
 
@@ -78,11 +78,11 @@ Content-Type: application/json
 
 { "firstName": "Juan Carlos" }
 
-### [ADMIN] Listar usuarios
+### [ADMIN] Listar users
 GET {{base}}/users?page=1&limit=10&search=juan
 Authorization: Bearer {{access}}
 
-### [ADMIN] Ver usuario
+### [ADMIN] Ver user
 GET {{base}}/users/{{userId}}
 Authorization: Bearer {{access}}
 

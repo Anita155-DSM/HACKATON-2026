@@ -8,68 +8,68 @@ import { Loading } from "../../components/layout";
 import clienteAxios from "../../config/axios";
 
 export default function Users() {
-  const [usuarios, setUsuarios] = useState([]);
+  const [users, setusers] = useState([]);
   const [loading, setLoading] = useState(true);
   
   // Estados para Modales
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   
-  // Estados para saber qué usuario estamos manipulando
-  const [usuarioAEditar, setUsuarioAEditar] = useState(null);
-  const [usuarioAEliminar, setUsuarioAEliminar] = useState(null);
+  // Estados para saber qué user estamos manipulando
+  const [userAEditar, setuserAEditar] = useState(null);
+  const [userAEliminar, setuserAEliminar] = useState(null);
 
   const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm();
 
   useEffect(() => {
-    const fetchUsuarios = async () => {
+    const fetchusers = async () => {
       try {
         const { data } = await clienteAxios.get("/users");
-        setUsuarios(data);
+        setusers(data);
       } catch (error) {
-        toast.error("Error al cargar los usuarios");
+        toast.error("Error al cargar los users");
       } finally {
         setLoading(false);
       }
     };
-    fetchUsuarios();
+    fetchusers();
   }, []);
 
   // --- LÓGICA DE CREACIÓN Y EDICIÓN ---
 
   // Abre el modal limpio para crear
-  const handleNuevoUsuario = () => {
-    setUsuarioAEditar(null);
+  const handleNuevouser = () => {
+    setuserAEditar(null);
     reset({ nombre: "", email: "" }); // Limpia los inputs
     setIsModalOpen(true);
   };
 
-  // Abre el modal con los datos del usuario cargados
-  const handleEditarUsuario = (usuario) => {
-    setUsuarioAEditar(usuario);
-    reset(usuario); // Magia de react-hook-form: llena los inputs automáticamente
+  // Abre el modal con los datos del user cargados
+  const handleEditaruser = (user) => {
+    setuserAEditar(user);
+    reset(user); // Magia de react-hook-form: llena los inputs automáticamente
     setIsModalOpen(true);
   };
 
   // Guarda los datos (Crea o Actualiza según el estado)
   const onSubmit = async (data) => {
     try {
-      if (usuarioAEditar) {
+      if (userAEditar) {
         // MODO EDICIÓN
-        await clienteAxios.put(`/users/${usuarioAEditar.id}`, data);
+        await clienteAxios.put(`/users/${userAEditar.id}`, data);
         
         // Actualiza el array local reemplazando solo el modificado
-        setUsuarios(usuarios.map(u => 
-          u.id === usuarioAEditar.id ? { ...u, nombre: data.nombre, email: data.email } : u
+        setusers(users.map(u => 
+          u.id === userAEditar.id ? { ...u, nombre: data.nombre, email: data.email } : u
         ));
-        toast.success("Usuario actualizado correctamente");
+        toast.success("user actualizado correctamente");
 
       } else {
         // MODO CREACIÓN
         await clienteAxios.post("/users", data);
-        const nuevoUsuario = { id: Date.now(), nombre: data.nombre, email: data.email, rol: "Usuario" };
-        setUsuarios([...usuarios, nuevoUsuario]);
-        toast.success("Usuario creado correctamente");
+        const nuevouser = { id: Date.now(), nombre: data.nombre, email: data.email, rol: "user" };
+        setusers([...users, nuevouser]);
+        toast.success("user creado correctamente");
       }
       
       setIsModalOpen(false);
@@ -80,20 +80,20 @@ export default function Users() {
 
   // --- LÓGICA DE ELIMINACIÓN ---
   
-  const handleClickEliminar = (usuario) => {
-    setUsuarioAEliminar(usuario);
+  const handleClickEliminar = (user) => {
+    setuserAEliminar(user);
     setIsConfirmOpen(true);
   };
 
   const confirmarEliminacion = async () => {
     try {
-      setUsuarios(usuarios.filter(u => u.id !== usuarioAEliminar.id));
-      toast.success("Usuario eliminado correctamente");
+      setusers(users.filter(u => u.id !== userAEliminar.id));
+      toast.success("user eliminado correctamente");
     } catch (error) {
-      toast.error("Error al eliminar el usuario");
+      toast.error("Error al eliminar el user");
     } finally {
       setIsConfirmOpen(false);
-      setUsuarioAEliminar(null);
+      setuserAEliminar(null);
     }
   };
 
@@ -104,11 +104,11 @@ export default function Users() {
       
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-800">Gestión de Usuarios</h1>
+          <h1 className="text-2xl font-bold text-gray-800">Gestión de users</h1>
           <p className="text-gray-500 text-sm">Administra los accesos al sistema.</p>
         </div>
-        <Button onClick={handleNuevoUsuario} className="flex items-center gap-2">
-          <FaPlus /> Nuevo Usuario
+        <Button onClick={handleNuevouser} className="flex items-center gap-2">
+          <FaPlus /> Nuevo user
         </Button>
       </div>
 
@@ -124,7 +124,7 @@ export default function Users() {
               </tr>
             </thead>
             <tbody className="text-sm text-gray-700">
-              {usuarios.map((user) => (
+              {users.map((user) => (
                 <tr key={user.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
                   <td className="py-3 px-4 font-medium text-gray-900">{user.nombre}</td>
                   <td className="py-3 px-4">{user.email}</td>
@@ -138,7 +138,7 @@ export default function Users() {
                   <td className="py-3 px-4 text-right space-x-2">
                     {/* Botón Editar modificado */}
                     <button 
-                      onClick={() => handleEditarUsuario(user)}
+                      onClick={() => handleEditaruser(user)}
                       className="text-blue-500 hover:text-blue-700 p-1 transition-colors"
                     >
                       <FaEdit />
@@ -161,7 +161,7 @@ export default function Users() {
       <Modal 
         isOpen={isModalOpen} 
         onClose={() => setIsModalOpen(false)} 
-        title={usuarioAEditar ? "Editar Usuario" : "Crear Nuevo Usuario"}
+        title={userAEditar ? "Editar user" : "Crear Nuevo user"}
       >
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <Input
@@ -189,7 +189,7 @@ export default function Users() {
               Cancelar
             </Button>
             <Button type="submit" variant="primary" disabled={isSubmitting}>
-              {isSubmitting ? "Guardando..." : (usuarioAEditar ? "Actualizar Datos" : "Guardar Usuario")}
+              {isSubmitting ? "Guardando..." : (userAEditar ? "Actualizar Datos" : "Guardar user")}
             </Button>
           </div>
         </form>
@@ -199,8 +199,8 @@ export default function Users() {
         isOpen={isConfirmOpen}
         onClose={() => setIsConfirmOpen(false)}
         onConfirm={confirmarEliminacion}
-        title="Eliminar Usuario"
-        message={`¿Estás seguro de que deseas eliminar a ${usuarioAEliminar?.nombre}? Esta acción no se puede deshacer.`}
+        title="Eliminar user"
+        message={`¿Estás seguro de que deseas eliminar a ${userAEliminar?.nombre}? Esta acción no se puede deshacer.`}
         confirmText="Sí, eliminar"
         cancelText="Cancelar"
         isDestructive={true}

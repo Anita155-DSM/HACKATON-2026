@@ -4,7 +4,7 @@ import { FaHome, FaUsers, FaCog } from "react-icons/fa";
 export default function Sidebar() {
   const links = [
     { name: "Dashboard", path: "/", icon: <FaHome /> },
-    { name: "Usuarios", path: "/usuarios", icon: <FaUsers /> },
+    { name: "users", path: "/users", icon: <FaUsers /> },
     { name: "Ajustes", path: "/settings", icon: <FaCog /> },
   ];
 

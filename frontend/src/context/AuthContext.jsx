@@ -21,8 +21,8 @@ export const AuthProvider = ({ children }) => {
 
       try {
         // Llamada limpia al servicio (que será interceptada por el mock)
-        const datosUsuario = await validarTokenService();
-        setUser(datosUsuario);
+        const datosuser = await validarTokenService();
+        setUser(datosuser);
         setIsAuthenticated(true);
       } catch (error) {
         console.error("Fallo al validar la sesión:", error);
@@ -37,9 +37,9 @@ export const AuthProvider = ({ children }) => {
     revisarSesion();
   }, []);
 
-  const login = (datosUsuario, tokenRecibido) => {
+  const login = (datosuser, tokenRecibido) => {
     localStorage.setItem("token", tokenRecibido);
-    setUser(datosUsuario);
+    setUser(datosuser);
     setIsAuthenticated(true);
   };
 
