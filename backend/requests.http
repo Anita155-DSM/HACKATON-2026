@@ -1,0 +1,105 @@
+### Archivo para la extensión "REST Client" de VS Code (también sirve de referencia para Postman)
+@base = http://localhost:3000/api
+@access = pegar_accessToken_aca
+@refresh = pegar_refreshToken_aca
+@token = pegar_token_del_email_aca
+@userId = pegar_id_aca
+
+### Health
+GET {{base}}/health
+
+### Registro
+POST {{base}}/auth/register
+Content-Type: application/json
+
+{
+  "firstName": "Juan",
+  "lastName": "Pérez",
+  "email": "juan@mail.com",
+  "password": "Clave1234",
+  "confirmPassword": "Clave1234"
+}
+
+### Login
+POST {{base}}/auth/login
+Content-Type: application/json
+
+{ "email": "juan@mail.com", "password": "Clave1234" }
+
+### Usuario actual
+GET {{base}}/auth/me
+Authorization: Bearer {{access}}
+
+### Renovar tokens
+POST {{base}}/auth/refresh
+Content-Type: application/json
+
+{ "refreshToken": "{{refresh}}" }
+
+### Logout (invalida todas las sesiones)
+POST {{base}}/auth/logout
+Authorization: Bearer {{access}}
+
+### Verificar email (el token llega por mail / consola)
+POST {{base}}/auth/verify-email
+Content-Type: application/json
+
+{ "token": "{{token}}" }
+
+### Reenviar verificación
+POST {{base}}/auth/resend-verification
+Content-Type: application/json
+
+{ "email": "juan@mail.com" }
+
+### Olvidé mi contraseña
+POST {{base}}/auth/forgot-password
+Content-Type: application/json
+
+{ "email": "juan@mail.com" }
+
+### Restablecer contraseña
+POST {{base}}/auth/reset-password
+Content-Type: application/json
+
+{ "token": "{{token}}", "password": "Nueva1234", "confirmPassword": "Nueva1234" }
+
+### Cambiar contraseña (logueado)
+PATCH {{base}}/auth/change-password
+Authorization: Bearer {{access}}
+Content-Type: application/json
+
+{ "currentPassword": "Clave1234", "newPassword": "Otra1234", "confirmPassword": "Otra1234" }
+
+### Actualizar mi perfil
+PATCH {{base}}/users/me
+Authorization: Bearer {{access}}
+Content-Type: application/json
+
+{ "firstName": "Juan Carlos" }
+
+### [ADMIN] Listar usuarios
+GET {{base}}/users?page=1&limit=10&search=juan
+Authorization: Bearer {{access}}
+
+### [ADMIN] Ver usuario
+GET {{base}}/users/{{userId}}
+Authorization: Bearer {{access}}
+
+### [ADMIN] Cambiar rol
+PATCH {{base}}/users/{{userId}}/role
+Authorization: Bearer {{access}}
+Content-Type: application/json
+
+{ "role": "admin" }
+
+### [ADMIN] Activar / desactivar
+PATCH {{base}}/users/{{userId}}/status
+Authorization: Bearer {{access}}
+Content-Type: application/json
+
+{ "isActive": false }
+
+### [ADMIN] Eliminar
+DELETE {{base}}/users/{{userId}}
+Authorization: Bearer {{access}}
