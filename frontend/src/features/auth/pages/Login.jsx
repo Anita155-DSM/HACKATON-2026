@@ -1,28 +1,40 @@
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { FaSignInAlt } from "react-icons/fa";
+// 1. Importamos useNavigate de react-router-dom
+import { useNavigate,Link } from "react-router-dom";
+
 import { Card, Button, Input } from "../../../components/ui";
 import { useAuth } from "../../../hooks/useAuth.js";
 import clienteAxios from "../../../config/axios.js";
-import { playSound } from "../../../helpers/sounds/audio.js"; // Importamos el helper
+import { playSound } from "../../../helpers/sounds/audio.js";
 
 export default function Login() {
   const { login } = useAuth();
+  // 2. Inicializamos la función de navegación
+  const navigate = useNavigate();
+
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm();
 
   const onSubmit = async (data) => {
     try {
       const response = await clienteAxios.post("/auth/login", data);
-      
-      // Reproduce sonido de éxito antes de redirigir
+
       playSound('success');
       toast.success("¡Bienvenido al sistema!");
-      
-      login(response.data.user, response.data.token);
+
+      const { user, accessToken } = response.data.data;
+
+
+      // Guardamos la sesión en el contexto
+      login(user, accessToken);
+
+      // 3. Redirigimos forzosamente a la ruta raíz (donde debería estar tu Home)
+      navigate("/");
+
     } catch (error) {
-      // Reproduce sonido de error
       playSound('error');
-      
+
       const mensaje = error.response?.data?.mensaje || "Error al iniciar sesión";
       toast.error(mensaje);
     }
@@ -55,19 +67,23 @@ export default function Login() {
             {...register("password", { required: "La contraseña es obligatoria" })}
           />
 
-          <Button 
-            type="submit" 
+          <Button
+            type="submit"
             className="w-full mt-4 flex justify-center items-center gap-2"
             disabled={isSubmitting}
-            // Accesibilidad: El lector de pantalla leerá esto
             aria-label="Botón para ingresar al panel de administración"
-            // Accesibilidad: Tooltip visual al pasar el mouse
             title="Ingresar al Panel"
           >
             {isSubmitting ? "Verificando..." : "Ingresar al Panel"}
             {!isSubmitting && <FaSignInAlt aria-hidden="true" />}
           </Button>
         </form>
+        <div className="mt-6 text-center text-sm text-gray-500 border-t border-gray-100 pt-4">
+          ¿No tienes una cuenta?{' '}
+          <Link to="/register" className="text-blue-600 hover:text-blue-700 font-medium transition-colors">
+            Regístrate aquí
+          </Link>
+        </div>
       </Card>
     </div>
   );

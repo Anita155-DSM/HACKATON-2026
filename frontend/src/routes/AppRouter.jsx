@@ -9,8 +9,8 @@ import AuthLayout from "../layouts/AuthLayout";
 import Settings from "../pages/settings/Settings";
 import Profile from "../pages/profile/Profile";
 import Home from "../pages/home/Home";
-import Login from "../features/auth/pages/Login";
 import Users from "../pages/users/Users";
+import {Register, Login} from "../features/auth/pages/index.js";
 
 export default function AppRouter() {
   return (
@@ -19,6 +19,7 @@ export default function AppRouter() {
       <Route element={<AuthLayout />}>
         {/* Descomentamos la ruta de login */}
         <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
       </Route>
 
       {/* RUTAS PRIVADAS */}

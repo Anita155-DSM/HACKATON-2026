@@ -6,7 +6,8 @@ export const loginService = async (email, password) => {
 };
 
 export const validarTokenService = async () => {
-  // Axios inyectará el token automáticamente gracias al interceptor
-  const respuesta = await clienteAxios.get('/auth/me');
-  return respuesta.data;
+  const { data } = await clienteAxios.get('/auth/me');
+
+  // El backend real devuelve: { exito: true, data: { user: { id, nombre, email, rol, ... } } }
+  return data.data.user;
 };
