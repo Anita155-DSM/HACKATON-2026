@@ -14,27 +14,31 @@ export default function Register() {
   // Observamos el valor de la contraseña para validar que la confirmación coincida
   const password = watch("password", "");
 
-  const onSubmit = async (data) => {
+ const onSubmit = async (data) => {
     try {
-      // Preparamos el payload exacto que pide tu backend
       const payload = {
         firstName: data.firstName,
         lastName: data.lastName,
         email: data.email,
-        password: data.password
+        password: data.password,
+        confirmPassword: data.confirmPassword // Lo sumamos por si el validador lo exige
       };
 
       const response = await clienteAxios.post("/auth/register", payload);
       
       playSound('success');
-      // Usamos el mensaje real que devuelve tu backend ("Registro exitoso. Revisá tu email...")
       toast.success(response.data.mensaje || "¡Registro completado con éxito!");
-      
-      // Redirigimos al usuario al login para que inicie sesión o espere la verificación
       navigate("/login"); 
       
     } catch (error) {
       playSound('error');
+      
+      // DEBUG: Revelamos qué campo exacto falló la validación
+      console.error("Detalles del error 422:", error.response?.data);
+      if (error.response?.data?.errors) {
+        console.table(error.response.data.errors);
+      }
+
       const mensaje = error.response?.data?.mensaje || "Error al registrar el usuario";
       toast.error(mensaje);
     }
@@ -125,7 +129,7 @@ export default function Register() {
             Inicia sesión aquí
           </Link>
         </div>
-        
+
       </Card>
     </div>
   );
