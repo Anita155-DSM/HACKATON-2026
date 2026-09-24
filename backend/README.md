@@ -1,10 +1,46 @@
 # Hackathon Backend PostgreSQL
 
-API base para proyectos de hackatón y aplicaciones con autenticación, users, roles, validaciones y envío de emails. Esta versión ya está adaptada al código actual del proyecto y refleja la estructura real que existe en el repositorio.
+## Descripción
+
+Este repositorio contiene la **base del backend** para el proyecto de la hackatón.
+Es una estructura inicial y reutilizable sobre la que se pueden añadir las
+funcionalidades específicas del producto. Actualmente incluye la base de una API
+REST con autenticación, gestión de usuarios, roles, validaciones, seguridad y
+envío de emails.
+
+La base actual permite registrar e iniciar sesión, renovar y cerrar sesiones,
+verificar emails, recuperar y cambiar contraseñas, consultar el perfil propio y
+gestionar usuarios desde una cuenta administradora. También deja preparada la
+conexión con PostgreSQL, el control de variables de entorno y el despliegue con
+Docker.
+
+## Lenguaje y tecnologías
+
+### Lenguaje del backend
+
+- **JavaScript** moderno con **ES Modules** (`import` / `export`).
+- **Node.js 18 o superior** como entorno de ejecución.
+
+### Tecnologías principales
+
+- **Express**: servidor HTTP y definición de rutas REST.
+- **PostgreSQL**: base de datos relacional.
+- **Sequelize**: ORM para conectar y trabajar con PostgreSQL.
+- **JWT** (`jsonwebtoken`): access tokens y refresh tokens.
+- **bcryptjs**: hash seguro de contraseñas.
+- **Nodemailer**: envío de emails de verificación y recuperación.
+- **express-validator**: validación de cuerpos, parámetros y consultas.
+- **Helmet**: cabeceras de seguridad HTTP.
+- **CORS**: control de los orígenes permitidos.
+- **express-rate-limit**: limitación de solicitudes en la API y autenticación.
+- **Morgan**: registro de solicitudes HTTP durante el desarrollo.
+- **dotenv**: configuración mediante variables de entorno.
+- **Docker Compose**: ejecución local de PostgreSQL.
+- **Nodemon**: reinicio automático del servidor en desarrollo.
 
 ## Stack
 
-- Node.js
+- JavaScript + Node.js
 - Express
 - PostgreSQL + Sequelize
 - JWT para autenticación
@@ -12,7 +48,7 @@ API base para proyectos de hackatón y aplicaciones con autenticación, users, r
 - Nodemailer para emails
 - express-validator
 - Helmet + CORS
-- express-rate-limit
+- express-rate-limit + Morgan
 - Docker Compose para la base de datos
 
 ## Requisitos
