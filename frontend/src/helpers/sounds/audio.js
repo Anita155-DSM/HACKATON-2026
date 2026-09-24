@@ -1,6 +1,15 @@
 export const playSound = (type) => {
+  const isSoundEnabled = localStorage.getItem("sounds") !== "false";
+  if (!isSoundEnabled) return;
+
+  // Si es la primera vez que entra, lo ponemos en 0.8 (80%) para que suene fuerte de entrada
+  const savedVolume = localStorage.getItem("volume");
+  const volumeLevel = savedVolume !== null ? parseFloat(savedVolume) : 0.8;
+  
+  // Eliminamos la restricción. Multiplicamos por 1.5 para dar un overboost al 100% de la barra.
+  const actualGain = volumeLevel * 1.5;
+
   try {
-    // Inicializamos el sintetizador nativo del navegador
     const AudioContext = window.AudioContext || window.webkitAudioContext;
     const ctx = new AudioContext();
     
@@ -11,32 +20,32 @@ export const playSound = (type) => {
     gainNode.connect(ctx.destination);
 
     if (type === 'success') {
-      // Configuración para sonido de ÉXITO (Tono alegre que sube)
-      oscillator.type = 'sine'; // Onda suave
-      oscillator.frequency.setValueAtTime(440, ctx.currentTime); // Nota A4
-      oscillator.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.1); // Sube rápido a A5
+      // Cambiamos 'sine' (onda pura) por 'triangle' (onda con armónicos impares).
+      // Es mucho más fácil de percibir para alguien con pérdida auditiva.
+      oscillator.type = 'triangle';
+      oscillator.frequency.setValueAtTime(440, ctx.currentTime);
+      oscillator.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.1);
       
-      // Control de volumen (Fade out)
-      gainNode.gain.setValueAtTime(0.1, ctx.currentTime); // Volumen al 10%
-      gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+      gainNode.gain.setValueAtTime(actualGain, ctx.currentTime);
+      // Alargamos un poco el tiempo de decaimiento (de 0.3 a 0.4) para que el sonido no muera tan rápido
+      gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
       
       oscillator.start(ctx.currentTime);
-      oscillator.stop(ctx.currentTime + 0.3);
+      oscillator.stop(ctx.currentTime + 0.4);
       
     } else {
-      // Configuración para sonido de ERROR (Tono grave que baja)
-      oscillator.type = 'square'; // Onda más rústica/alerta
+      // 'square' ya es muy agresiva por naturaleza, ideal para errores
+      oscillator.type = 'square';
       oscillator.frequency.setValueAtTime(300, ctx.currentTime); 
       oscillator.frequency.exponentialRampToValueAtTime(150, ctx.currentTime + 0.2); 
       
-      // Control de volumen (Fade out)
-      gainNode.gain.setValueAtTime(0.1, ctx.currentTime); // Volumen al 10%
-      gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+      gainNode.gain.setValueAtTime(actualGain, ctx.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
       
       oscillator.start(ctx.currentTime);
-      oscillator.stop(ctx.currentTime + 0.3);
+      oscillator.stop(ctx.currentTime + 0.4);
     }
   } catch (error) {
-    console.warn("El navegador no soporta Web Audio API o está silenciado.", error);
+    console.warn("Web Audio API no soportada.", error);
   }
 };

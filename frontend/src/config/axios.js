@@ -13,7 +13,7 @@ clienteAxios.interceptors.request.use(
   (config) => {
     // Buscamos el token en el almacenamiento del navegador
     const token = localStorage.getItem('token');
-    
+
     // Si hay token, se lo inyectamos a los Headers en formato Bearer
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -33,21 +33,20 @@ clienteAxios.interceptors.response.use(
     return response;
   },
   (error) => {
-    // Si el backend nos responde con un error 401 (No Autorizado) o 403 (Prohibido)
-    // Significa que el token venció o es inválido.
-    if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+    // Solo expulsamos en el 401 (No Autorizado / Token Vencido)
+    if (error.response && error.response.status === 401) {
       console.error("Sesión expirada o token inválido.");
-      
-      // Borramos el token corrupto/vencido
       localStorage.removeItem('token');
-      
-      // Redirigimos al user al login forzosamente
-      // Usamos window.location porque estamos fuera del contexto de react-router-dom
       if (window.location.pathname !== '/login') {
         window.location.href = '/login';
       }
     }
-    
+
+    // Si es 403 (Prohibido / Sin Permisos), NO borramos el token
+    if (error.response && error.response.status === 403) {
+      console.warn("Intento de acceso a ruta sin permisos suficientes.");
+    }
+
     return Promise.reject(error);
   }
 );

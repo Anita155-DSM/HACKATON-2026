@@ -1,8 +1,7 @@
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { FaSignInAlt } from "react-icons/fa";
-// 1. Importamos useNavigate de react-router-dom
-import { useNavigate,Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 import { Card, Button, Input } from "../../../components/ui";
 import { useAuth } from "../../../hooks/useAuth.js";
@@ -11,7 +10,6 @@ import { playSound } from "../../../helpers/sounds/audio.js";
 
 export default function Login() {
   const { login } = useAuth();
-  // 2. Inicializamos la función de navegación
   const navigate = useNavigate();
 
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm();
@@ -25,16 +23,11 @@ export default function Login() {
 
       const { user, accessToken } = response.data.data;
 
-
-      // Guardamos la sesión en el contexto
       login(user, accessToken);
-
-      // 3. Redirigimos forzosamente a la ruta raíz (donde debería estar tu Home)
       navigate("/");
 
     } catch (error) {
       playSound('error');
-
       const mensaje = error.response?.data?.mensaje || "Error al iniciar sesión";
       toast.error(mensaje);
     }
@@ -43,8 +36,12 @@ export default function Login() {
   return (
     <div className="w-full max-w-md animate-pop">
       <div className="text-center mb-6">
-        <h2 className="text-2xl font-bold text-gray-800">Iniciar Sesión</h2>
-        <p className="text-gray-500 text-sm mt-1">Ingresa tus datos para continuar</p>
+        <h2 className="text-2xl font-bold text-gray-800 dark:text-white transition-colors">
+          Iniciar Sesión
+        </h2>
+        <p className="text-gray-500 dark:text-gray-400 text-sm mt-1 transition-colors">
+          Ingresa tus datos para continuar
+        </p>
       </div>
 
       <Card>
@@ -78,9 +75,9 @@ export default function Login() {
             {!isSubmitting && <FaSignInAlt aria-hidden="true" />}
           </Button>
         </form>
-        <div className="mt-6 text-center text-sm text-gray-500 border-t border-gray-100 pt-4">
+        <div className="mt-6 text-center text-sm text-gray-500 dark:text-gray-400 border-t border-gray-100 dark:border-gray-700 pt-4 transition-colors">
           ¿No tienes una cuenta?{' '}
-          <Link to="/register" className="text-blue-600 hover:text-blue-700 font-medium transition-colors">
+          <Link to="/register" className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium transition-colors">
             Regístrate aquí
           </Link>
         </div>

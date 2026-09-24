@@ -11,29 +11,27 @@ export default function Register() {
   const navigate = useNavigate();
   const { register, handleSubmit, watch, formState: { errors, isSubmitting } } = useForm();
 
-  // Observamos el valor de la contraseña para validar que la confirmación coincida
   const password = watch("password", "");
 
- const onSubmit = async (data) => {
+  const onSubmit = async (data) => {
     try {
       const payload = {
         firstName: data.firstName,
         lastName: data.lastName,
         email: data.email,
         password: data.password,
-        confirmPassword: data.confirmPassword // Lo sumamos por si el validador lo exige
+        confirmPassword: data.confirmPassword 
       };
 
       const response = await clienteAxios.post("/auth/register", payload);
       
       playSound('success');
       toast.success(response.data.mensaje || "¡Registro completado con éxito!");
-      navigate("/login"); 
+      navigate("/"); 
       
     } catch (error) {
       playSound('error');
       
-      // DEBUG: Revelamos qué campo exacto falló la validación
       console.error("Detalles del error 422:", error.response?.data);
       if (error.response?.data?.errors) {
         console.table(error.response.data.errors);
@@ -47,8 +45,12 @@ export default function Register() {
   return (
     <div className="w-full max-w-md animate-pop">
       <div className="text-center mb-6">
-        <h2 className="text-2xl font-bold text-gray-800">Crear Cuenta</h2>
-        <p className="text-gray-500 text-sm mt-1">Completa tus datos para registrarte</p>
+        <h2 className="text-2xl font-bold text-gray-800 dark:text-white transition-colors">
+          Crear Cuenta
+        </h2>
+        <p className="text-gray-500 dark:text-gray-400 text-sm mt-1 transition-colors">
+          Completa tus datos para registrarte
+        </p>
       </div>
 
       <Card>
@@ -123,9 +125,9 @@ export default function Register() {
           </Button>
         </form>
 
-        <div className="mt-6 text-center text-sm text-gray-500 border-t border-gray-100 pt-4">
+        <div className="mt-6 text-center text-sm text-gray-500 dark:text-gray-400 border-t border-gray-100 dark:border-gray-700 pt-4 transition-colors">
           ¿Ya tienes una cuenta?{' '}
-          <Link to="/login" className="text-blue-600 hover:text-blue-700 font-medium transition-colors">
+          <Link to="/login" className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium transition-colors">
             Inicia sesión aquí
           </Link>
         </div>
