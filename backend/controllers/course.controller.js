@@ -13,11 +13,11 @@ export const crearCurso = async (req, res) => {
   try {
     const { name, level, year, subject } = req.body;
   
-  const userId = req.user.id;
+  const teacherId = req.user.id;
 
   const code = await generarCodigoUnico();
 
-  const curso = await Course.create({ name, level, year, subject, code, userId });
+  const curso = await Course.create({ name, level, year, subject, code, teacherId });
 
   return res.status(201).json({
     exito: true,
@@ -35,9 +35,9 @@ export const crearCurso = async (req, res) => {
 
 export const misCursos = async (req, res) => {
   try {
-    const userId = req.user.id;
+    const teacherId = req.user.id;
     const cursos = await Course.findAll({
-      where: { userId },
+      where: { teacherId },
       oder: [["created_at", "DESC"]],
     });
 
