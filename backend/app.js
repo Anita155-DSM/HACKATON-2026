@@ -6,6 +6,7 @@ import morgan from 'morgan';
 import bcrypt from 'bcryptjs';
 import { sequelize } from './config/database.js';
 import { verificarConexionSMTP } from './config/mailer.js';
+import "./models/index.js"; // registra modelos + asociaciones antes que las rutas
 
 // IMPORTAMOS MODELOS
 import './models/user.models.js';
