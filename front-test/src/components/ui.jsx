@@ -14,7 +14,7 @@ export function Switch({ checked, onChange, label, description, icon: Icon }) {
       className="control group flex w-full items-center gap-4 rounded-[var(--radius-control)] px-3 py-3 text-left hover:bg-surface-2"
     >
       {Icon && (
-        <span className="grid size-11 shrink-0 place-items-center rounded-[var(--radius-control)] bg-soft text-[#0b2540] hc:bg-transparent hc:text-ink">
+        <span className="grid size-11 shrink-0 place-items-center rounded-[var(--radius-control)] bg-soft text-on-soft hc:bg-transparent hc:text-ink">
           <Icon size={24} aria-hidden="true" />
         </span>
       )}
@@ -105,7 +105,7 @@ export function Field({ label, hint, error, children, id: givenId, required }) {
 export function PageHeader({ title, children, actions }) {
   return (
     <header className="mb-8 grid gap-3">
-      <h1 className="text-[2rem] leading-tight font-bold md:text-[2.4rem]">{title}</h1>
+      <h1 className="display text-[2rem] leading-tight md:text-[2.4rem]">{title}</h1>
       {children && <div className="reading text-ink-2 text-[1.05rem]">{children}</div>}
       {actions && <div className="mt-2 flex flex-wrap gap-3">{actions}</div>}
     </header>
@@ -118,10 +118,10 @@ export function Badge({ tone = 'neutral', children, icon: Icon }) {
     ok: 'bg-ok-bg text-ok border-ok',
     warn: 'bg-warn-bg text-warn border-warn',
     danger: 'bg-danger-bg text-danger border-danger',
-    accent: 'bg-soft text-[#0b2540] border-soft hc:bg-transparent hc:text-ink hc:border-ink',
+    accent: 'bg-soft text-on-soft border-soft hc:bg-transparent hc:text-ink hc:border-ink',
   };
   return (
-    <span className={`inline-flex items-center gap-1.5 rounded-[10px] border px-2.5 py-1 text-[0.85rem] font-bold ${tones[tone]}`}>
+    <span className={`inline-flex items-center gap-1.5 rounded-[var(--radius-pill)] border px-3 py-1 text-[0.85rem] font-bold ${tones[tone]}`}>
       {Icon && <Icon size={16} weight="bold" aria-hidden="true" />}
       {children}
     </span>
@@ -132,7 +132,7 @@ export function EmptyState({ icon: Icon, title, children, action }) {
   return (
     <div className="box flex flex-col items-start gap-3 p-6 md:p-8">
       {Icon && (
-        <span className="grid size-14 place-items-center rounded-[var(--radius-box)] bg-soft text-[#0b2540] hc:bg-transparent hc:text-ink">
+        <span className="grid size-14 place-items-center rounded-[var(--radius-box)] bg-soft text-on-soft hc:bg-transparent hc:text-ink">
           <Icon size={30} aria-hidden="true" />
         </span>
       )}
@@ -208,8 +208,8 @@ export function Dialog({ open, onClose, title, children, footer, size = 'md', si
       aria-labelledby="dialog-title"
       className={
         side
-          ? 'box m-0 ml-auto h-dvh max-h-dvh w-full max-w-lg rounded-none rounded-l-[var(--radius-box)] bg-surface p-0 text-ink backdrop:bg-[#0b2540]/45 md:w-[30rem]'
-          : `box m-auto w-[calc(100%-2rem)] ${sizes[size]} bg-surface p-0 text-ink backdrop:bg-[#0b2540]/45`
+          ? 'box m-0 ml-auto h-dvh max-h-dvh w-full max-w-lg rounded-none rounded-l-[var(--radius-box)] bg-surface p-0 text-ink backdrop:bg-[#041e2a]/50 md:w-[30rem]'
+          : `box m-auto w-[calc(100%-2rem)] ${sizes[size]} bg-surface p-0 text-ink backdrop:bg-[#041e2a]/50`
       }
     >
       {open && (

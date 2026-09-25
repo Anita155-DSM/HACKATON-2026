@@ -55,7 +55,7 @@ export function PreferencesProvider({ children }) {
     set('motion', prefs.reduceMotion, 'reduce');
     d.style.setProperty('--text-scale', prefs.textScale);
     document.querySelectorAll('meta[name="theme-color"]').forEach((m) => {
-      m.setAttribute('content', resolvedTheme === 'dark' ? (prefs.contrast ? '#000000' : '#0B1B2B') : '#EEF5FF');
+      m.setAttribute('content', resolvedTheme === 'dark' ? (prefs.contrast ? '#000000' : '#041E2A') : '#F4F9FF');
     });
     setRate(prefs.voiceRate);
     setSoundsEnabled(prefs.sounds);

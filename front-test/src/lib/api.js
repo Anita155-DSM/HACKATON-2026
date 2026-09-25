@@ -298,6 +298,11 @@ export const materials = {
           () => request(`/materials/${id}/transcribir`, { method: 'POST', auth: true }),
           () => demo.transcribir(id),
         ),
+  // Guía del glosario para el traductor: GET /materials/:id/glosario (docente logueado).
+  // Claude elige las palabras importantes del castellano y el servidor las busca en el
+  // "Glosario wichí lhämtes". No tiene modo demostración: el libro vive en el backend,
+  // así que sin servidor la pantalla lo avisa en vez de inventar términos.
+  glossaryGuide: (id, signal) => request(`/materials/${id}/glosario`, { auth: true, signal }).then((r) => r.data),
   remove: (id) =>
     esEjemplo(id)
       ? adaptDemo(async () => envelope(await demo.eliminarMaterial(id), 'Material eliminado'))
@@ -305,6 +310,18 @@ export const materials = {
           () => request(`/materials/${id}`, { method: 'DELETE', auth: true }),
           async () => envelope(await demo.eliminarMaterial(id), 'Material eliminado'),
         ),
+};
+
+/* ---------- Glosario del servidor ---------- */
+
+// GET /api/glossary?language=wichi (público). Son los términos que ya tiene el equipo
+// en el servidor, con su fuente citada. Si no responde, cada pantalla sigue con lo
+// que tenga guardado en el dispositivo.
+export const glossary = {
+  list: async (language = 'wichi') => {
+    const r = await request(`/glossary?language=${encodeURIComponent(language)}`);
+    return r.data?.terminos || [];
+  },
 };
 
 /* ---------- Traducciones ---------- */

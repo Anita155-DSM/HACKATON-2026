@@ -68,7 +68,7 @@ export default function StudentJoin() {
     <div className="wrap py-10 md:py-14">
       <div className="mx-auto grid max-w-md gap-7">
         <header className="grid gap-3">
-          <h1 className="text-[2rem] leading-tight font-bold">¿Cuál es el código de tu curso?</h1>
+          <h1 className="display text-[2rem] leading-tight">¿Cuál es el código de tu curso?</h1>
           <p className="text-[1.1rem] text-ink-2">Son 4 números. Te los da tu docente. Lo escribís una sola vez.</p>
           {canSpeak && (
             <div>

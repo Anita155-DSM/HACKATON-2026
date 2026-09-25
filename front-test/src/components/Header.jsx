@@ -11,11 +11,11 @@ import PreferencesPanel from './PreferencesPanel.jsx';
 function Logo() {
   return (
     <Link
-      to="/?inicio=1"
+      to="/"
       className="flex min-w-0 items-center gap-2.5 rounded-[var(--radius-control)] py-1 font-bold no-underline text-ink"
     >
       <img src="/icon.svg" alt="" width="40" height="40" className="size-10 shrink-0 rounded-[12px]" />
-      <span className="truncate text-[1.3rem] tracking-tight">{APP_NAME}</span>
+      <span className="brand truncate text-[1.35rem]">{APP_NAME}</span>
     </Link>
   );
 }
@@ -77,82 +77,84 @@ export default function Header() {
   ].filter(Boolean);
 
   const navClass = ({ isActive }) =>
-    `whitespace-nowrap rounded-[var(--radius-control)] px-2.5 py-2 font-bold no-underline ${
-      isActive ? 'bg-soft text-[#0b2540] hc:bg-ink hc:text-bg' : 'text-ink hover:bg-surface-2'
+    `whitespace-nowrap rounded-[var(--radius-pill)] px-3.5 py-2 font-bold no-underline ${
+      isActive ? 'bg-soft text-on-soft hc:bg-ink hc:text-bg' : 'text-ink hover:bg-surface-2'
     }`;
 
   return (
-    <header className="sticky top-0 z-30 border-b border-line bg-bg/95 backdrop-blur supports-[backdrop-filter]:bg-bg/85 hc:bg-bg">
-      <div className="wrap flex h-[4.1rem] items-center gap-2">
-        <Logo />
+    <>
+      <header className="site-header sticky top-0 z-30 border-b border-line bg-bg/95 backdrop-blur supports-[backdrop-filter]:bg-bg/85 hc:bg-bg">
+        <div className="wrap flex h-[4.1rem] items-center gap-2">
+          <Logo />
 
-        <nav aria-label="Principal" className="ml-5 hidden items-center gap-0.5 lg:flex focus-mode:!hidden">
-          {links.map((l) => (
-            <NavLink key={l.to} to={l.to} className={navClass}>
-              {l.label}
-            </NavLink>
-          ))}
-        </nav>
-
-        <div className="ml-auto flex items-center gap-1.5">
-          <div className="hidden xl:block">
-            <LanguageSelect id="lang-desktop" />
-          </div>
-          {canSpeak && (
-            <button
-              type="button"
-              className="btn btn-ghost !px-3 max-sm:hidden"
-              onClick={toggleListen}
-              aria-pressed={reading}
-              aria-label={reading ? t('header.detener') : t('header.escuchar')}
-            >
-              {reading ? <StopCircle size={26} weight="fill" aria-hidden="true" /> : <SpeakerHigh size={26} aria-hidden="true" />}
-              <span className="hidden 2xl:inline">{reading ? t('header.detener') : t('header.escuchar')}</span>
-            </button>
-          )}
-          <button
-            type="button"
-            className="btn btn-secondary !px-3"
-            onClick={() => setPrefsOpen(true)}
-            aria-haspopup="dialog"
-          >
-            <GearSix size={26} aria-hidden="true" />
-            <span className="sr-only sm:not-sr-only">{t('header.preferencias')}</span>
-          </button>
-          <button
-            type="button"
-            className="btn btn-ghost !px-3 lg:hidden"
-            aria-expanded={menuOpen}
-            aria-controls="menu-movil"
-            onClick={() => setMenuOpen((v) => !v)}
-          >
-            {menuOpen ? <X size={26} aria-hidden="true" /> : <List size={26} aria-hidden="true" />}
-            <span className="sr-only">Menú</span>
-          </button>
-        </div>
-      </div>
-
-      {menuOpen && (
-        <div id="menu-movil" className="border-t border-line bg-surface lg:hidden">
-          <nav aria-label="Principal" className="wrap grid gap-1 py-3">
+          <nav aria-label="Principal" className="ml-5 hidden items-center gap-0.5 lg:flex focus-mode:!hidden">
             {links.map((l) => (
               <NavLink key={l.to} to={l.to} className={navClass}>
-                <span className="block py-1.5">{l.label}</span>
+                {l.label}
               </NavLink>
             ))}
-            <div className="mt-2 flex flex-wrap items-center gap-2 border-t border-line pt-3">
-              <LanguageSelect id="lang-mobile" />
-              {canSpeak && (
-                <button type="button" className="btn btn-secondary sm:hidden" onClick={toggleListen} aria-pressed={reading}>
-                  {reading ? <StopCircle size={24} weight="fill" aria-hidden="true" /> : <SpeakerHigh size={24} aria-hidden="true" />}
-                  {reading ? t('header.detener') : t('header.escuchar')}
-                </button>
-              )}
-            </div>
           </nav>
+
+          <div className="ml-auto flex items-center gap-1.5">
+            <div className="hidden xl:block">
+              <LanguageSelect id="lang-desktop" />
+            </div>
+            {canSpeak && (
+              <button
+                type="button"
+                className="btn btn-ghost !px-3 max-sm:hidden"
+                onClick={toggleListen}
+                aria-pressed={reading}
+                aria-label={reading ? t('header.detener') : t('header.escuchar')}
+              >
+                {reading ? <StopCircle size={26} weight="fill" aria-hidden="true" /> : <SpeakerHigh size={26} aria-hidden="true" />}
+                <span className="hidden 2xl:inline">{reading ? t('header.detener') : t('header.escuchar')}</span>
+              </button>
+            )}
+            <button
+              type="button"
+              className="btn btn-secondary !px-3"
+              onClick={() => setPrefsOpen(true)}
+              aria-haspopup="dialog"
+            >
+              <GearSix size={26} aria-hidden="true" />
+              <span className="sr-only sm:not-sr-only">{t('header.preferencias')}</span>
+            </button>
+            <button
+              type="button"
+              className="btn btn-ghost !px-3 lg:hidden"
+              aria-expanded={menuOpen}
+              aria-controls="menu-movil"
+              onClick={() => setMenuOpen((v) => !v)}
+            >
+              {menuOpen ? <X size={26} aria-hidden="true" /> : <List size={26} aria-hidden="true" />}
+              <span className="sr-only">Menú</span>
+            </button>
+          </div>
         </div>
-      )}
+
+        {menuOpen && (
+          <div id="menu-movil" className="border-t border-line bg-surface lg:hidden">
+            <nav aria-label="Principal" className="wrap grid gap-1 py-3">
+              {links.map((l) => (
+                <NavLink key={l.to} to={l.to} className={navClass}>
+                  <span className="block py-1.5">{l.label}</span>
+                </NavLink>
+              ))}
+              <div className="mt-2 flex flex-wrap items-center gap-2 border-t border-line pt-3">
+                <LanguageSelect id="lang-mobile" />
+                {canSpeak && (
+                  <button type="button" className="btn btn-secondary sm:hidden" onClick={toggleListen} aria-pressed={reading}>
+                    {reading ? <StopCircle size={24} weight="fill" aria-hidden="true" /> : <SpeakerHigh size={24} aria-hidden="true" />}
+                    {reading ? t('header.detener') : t('header.escuchar')}
+                  </button>
+                )}
+              </div>
+            </nav>
+          </div>
+        )}
+      </header>
       <PreferencesPanel open={prefsOpen} onClose={() => setPrefsOpen(false)} />
-    </header>
+    </>
   );
 }

@@ -13,7 +13,7 @@ export default function Footer() {
     <footer data-nonessential className="mt-20 border-t border-line bg-surface">
       <div className="wrap grid gap-10 py-12 md:grid-cols-[1.4fr_1fr_1fr]">
         <div className="grid content-start gap-3">
-          <p className="text-[1.3rem] font-bold">{APP_NAME}</p>
+          <p className="brand text-[1.75rem] font-bold">{APP_NAME}</p>
           <p className="reading text-ink-2">
             Proyecto de la Hackatón 2026 sobre accesibilidad educativa en Formosa. Las traducciones y el glosario pertenecen a la
             comunidad que los produce.
@@ -42,6 +42,9 @@ export default function Footer() {
         <nav aria-label="Más información" className="grid content-start gap-2">
           <h2 className="font-bold">Más información</h2>
           <ul className="grid gap-1.5">
+            <li>
+              <Link to="/">Volver a la portada</Link>
+            </li>
             <li>
               <Link to="/accesibilidad">Declaración de accesibilidad</Link>
             </li>

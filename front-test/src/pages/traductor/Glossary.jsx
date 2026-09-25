@@ -1,15 +1,17 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { CheckCircle, DownloadSimple, MagnifyingGlass, PencilSimple, Plus } from '@phosphor-icons/react';
 import TermForm from '../../components/TermForm.jsx';
 import { Badge, Dialog, EmptyState, PageHeader } from '../../components/ui.jsx';
 import { useAnnouncer } from '../../context/AnnouncerContext.jsx';
 import { GLOSSARY_SOURCES } from '../../data/glossary.js';
+import { glossary as glossaryApi } from '../../lib/api.js';
 import { WICHI_LANG_TAG } from '../../lib/config.js';
-import { exportGlossary, getGlossary } from '../../lib/glossary.js';
+import { exportGlossary, getGlossary, mergeRemote } from '../../lib/glossary.js';
 import { useDocumentTitle } from '../../lib/hooks.js';
 
 const ESTADOS = {
   validado: { tone: 'ok', label: 'Revisado', icon: CheckCircle },
+  citado: { tone: 'accent', label: 'Del diccionario citado' },
   propuesto: { tone: 'warn', label: 'Propuesto' },
   'por-completar': { tone: 'neutral', label: 'Por completar' },
 };
@@ -20,6 +22,19 @@ export default function Glossary() {
   const [terms, setTerms] = useState(() => getGlossary('wichi'));
   const [q, setQ] = useState('');
   const [editing, setEditing] = useState(null);
+
+  // Los términos que ya están en el servidor se suman a los de este dispositivo.
+  // Si el servidor no responde, la pantalla sigue funcionando con lo local.
+  useEffect(() => {
+    let vivo = true;
+    glossaryApi
+      .list('wichi')
+      .then((remotos) => vivo && remotos.length && setTerms((t) => mergeRemote(t, remotos)))
+      .catch(() => {});
+    return () => {
+      vivo = false;
+    };
+  }, []);
 
   const filtered = useMemo(() => {
     const n = q.trim().toLowerCase();

@@ -1,10 +1,44 @@
 # Hackathon Backend PostgreSQL
 
-API base para proyectos de hackatón y aplicaciones con autenticación, users, roles, validaciones y envío de emails. Esta versión ya está adaptada al código actual del proyecto y refleja la estructura real que existe en el repositorio.
+## Descripción
+
+Este repositorio contiene la **base del backend** para el proyecto de la hackatón.
+Es una estructura inicial y reutilizable sobre la que se pueden añadir las
+funcionalidades específicas del producto. Actualmente incluye la base de una API
+REST con autenticación, gestión de usuarios, roles, validaciones, seguridad y
+envío de emails.
+
+La base actual permite registrar e iniciar sesión, renovar y cerrar sesiones,
+verificar emails, recuperar y cambiar contraseñas, consultar el perfil propio y
+gestionar usuarios desde una cuenta administradora. También deja preparada la
+conexión con PostgreSQL mediante Supabase y el control de variables de entorno.
+
+## Lenguaje y tecnologías
+
+### Lenguaje del backend
+
+- **JavaScript** moderno con **ES Modules** (`import` / `export`).
+- **Node.js 18 o superior** como entorno de ejecución.
+
+### Tecnologías principales
+
+- **Express**: servidor HTTP y definición de rutas REST.
+- **PostgreSQL**: base de datos relacional.
+- **Sequelize**: ORM para conectar y trabajar con PostgreSQL.
+- **JWT** (`jsonwebtoken`): access tokens y refresh tokens.
+- **bcryptjs**: hash seguro de contraseñas.
+- **Nodemailer**: envío de emails de verificación y recuperación.
+- **express-validator**: validación de cuerpos, parámetros y consultas.
+- **Helmet**: cabeceras de seguridad HTTP.
+- **CORS**: control de los orígenes permitidos.
+- **express-rate-limit**: limitación de solicitudes en la API y autenticación.
+- **Morgan**: registro de solicitudes HTTP durante el desarrollo.
+- **dotenv**: configuración mediante variables de entorno.
+- **Nodemon**: reinicio automático del servidor en desarrollo.
 
 ## Stack
 
-- Node.js
+- JavaScript + Node.js
 - Express
 - PostgreSQL + Sequelize
 - JWT para autenticación
@@ -12,25 +46,19 @@ API base para proyectos de hackatón y aplicaciones con autenticación, users, r
 - Nodemailer para emails
 - express-validator
 - Helmet + CORS
-- express-rate-limit
-- Docker Compose para la base de datos
+- express-rate-limit + Morgan
+- Supabase como servicio PostgreSQL
 
 ## Requisitos
 
 - Node.js 18 o superior
-- PostgreSQL corriendo localmente o en Docker
+- Una cuenta y un proyecto de Supabase con una base de datos PostgreSQL
 - Variables de entorno configuradas en un archivo `.env`
 
 ## Instalación
 
 ```bash
 npm install
-```
-
-### Levantar base de datos con Docker
-
-```bash
-npm run db:up
 ```
 
 ### Ejecutar en modo desarrollo
@@ -55,9 +83,10 @@ PORT=3000
 NODE_ENV=development
 CORS_ORIGINS=http://localhost:5173
 
-# PostgreSQL
-DATABASE_URL=postgres://postgres:postgres@localhost:5432/hackathon_db
-# O bien:
+# PostgreSQL / Supabase
+DATABASE_URL=postgresql://postgres:<PASSWORD>@<SUPABASE_HOST>:5432/postgres
+DB_SSL=true
+# Como alternativa, se pueden usar variables PostgreSQL separadas:
 # DB_NAME=hackathon_db
 # DB_USER=postgres
 # DB_PASSWORD=postgres
@@ -115,7 +144,6 @@ ADMIN_LAST_NAME=Sistema
 ```text
 .
 ├─ app.js
-├─ docker-compose.yml
 ├─ package.json
 ├─ README.md
 ├─ requests.http
@@ -235,7 +263,9 @@ npm run db:up
 npm run dev
 ```
 
-Si prefieres usar PostgreSQL local sin Docker, asegúrate de tener una base llamada `hackathon_db` o configurar `DATABASE_URL` correctamente.
+El backend utiliza Supabase como PostgreSQL. Configura la cadena de conexión de
+Supabase en `DATABASE_URL` y activa `DB_SSL=true` para la conexión segura. La
+aplicación utiliza `DATABASE_URL` antes que las variables `DB_*` separadas.
 
 ## Archivo de pruebas HTTP
 
@@ -243,11 +273,11 @@ El proyecto incluye un archivo `requests.http` con ejemplos para probar los endp
 
 ## Deploy
 
-Para producción:
+Para producción con Supabase:
 
 - usar variables reales para JWT
-- configurar `DATABASE_URL` o variables DB en el servicio host
-- activar SSL si la base es externa
+- configurar la cadena de conexión de Supabase en `DATABASE_URL`
+- mantener `DB_SSL=true` para la conexión externa
 - definir `CLIENT_URL` y `CORS_ORIGINS` con el frontend real
 - usar un SMTP real o un proveedor externo para emails
 

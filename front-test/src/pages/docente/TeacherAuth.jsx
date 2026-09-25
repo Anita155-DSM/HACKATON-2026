@@ -184,7 +184,7 @@ export default function TeacherAuth() {
     <div className="wrap py-10 md:py-14">
       <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:gap-16">
         <div className="grid content-start gap-6">
-          <h1 className="text-[2rem] leading-tight font-bold md:text-[2.4rem]">Para docentes y traductores</h1>
+          <h1 className="display text-[2rem] leading-tight md:text-[2.4rem]">Para docentes y traductores</h1>
           <p className="max-w-[42ch] text-[1.1rem] text-ink-2">
             No hace falta saber de accesibilidad. Vos subís el material y la plataforma prepara las versiones.
           </p>

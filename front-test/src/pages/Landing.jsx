@@ -8,6 +8,7 @@ import {
   ClosedCaptioning,
   DeviceMobile,
   GraduationCap,
+  House,
   MagnifyingGlass,
   Minus,
   Plus,
@@ -82,7 +83,7 @@ function HeroPreview() {
         className="absolute inset-0 translate-x-2 translate-y-3 rounded-[calc(var(--radius-box)+4px)] bg-tint-2 md:-inset-5 md:translate-x-6 md:translate-y-6 hc:hidden"
         data-nonessential
       />
-      <figure className="box relative grid gap-4 p-5 shadow-[0_24px_60px_rgb(var(--shadow-tint)/0.14)] md:p-6">
+      <figure className="box relative grid gap-4 p-5 shadow-[0_8px_30px_rgb(var(--shadow-tint)/0.12)] md:p-6">
         <figcaption className="grid gap-1">
           <span className="text-[0.9rem] font-bold text-ink-2">Secundaria, 1.º año, Biología</span>
           <span className="text-[1.45rem] font-bold leading-tight">{EJEMPLO.title}</span>
@@ -150,10 +151,14 @@ function HeroPreview() {
 function Hero() {
   const { t } = useT();
   return (
-    <section aria-labelledby="hero-title" className="wrap pt-10 pb-16 md:pt-16 md:pb-24">
+    <section aria-labelledby="hero-title" className="wrap pt-10 pb-16 md:pt-14 md:pb-24">
+      <p className="badge rise mb-5" data-nonessential>
+        <House size={16} weight="bold" aria-hidden="true" />
+        Portal educativo · Formosa
+      </p>
       <h1
         id="hero-title"
-        className="rise max-w-[30ch] text-[1.95rem] leading-[1.1] font-bold tracking-tight md:text-[2.35rem] lg:max-w-none lg:text-[2.7rem]"
+        className="rise display max-w-[26ch] text-[2.15rem] leading-[1.08] md:text-[2.6rem] lg:max-w-none lg:text-[3rem]"
       >
         {t('hero.titulo')}
       </h1>
@@ -201,7 +206,10 @@ function HowItWorks() {
   return (
     <section aria-labelledby="como-title" className="border-y border-line bg-surface py-16 md:py-20">
       <div className="wrap">
-        <h2 id="como-title" className="text-[1.9rem] font-bold md:text-[2.2rem]">
+        <p className="badge mb-5" data-nonessential>
+          Paso a paso
+        </p>
+        <h2 id="como-title" className="display text-[1.9rem] md:text-[2.2rem]">
           Cómo funciona
         </h2>
         <ol className="relative mt-10 grid gap-10 md:grid-cols-3 md:gap-8">
@@ -237,7 +245,10 @@ function PublicLibrary() {
     <section aria-labelledby="biblio-title" className="wrap py-16 md:py-24">
       <div className="grid items-center gap-10 md:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)]">
         <div className="grid gap-5">
-          <h2 id="biblio-title" className="text-[1.9rem] font-bold md:text-[2.2rem]">
+          <p className="badge justify-self-start" data-nonessential>
+            Materiales abiertos
+          </p>
+          <h2 id="biblio-title" className="display text-[1.9rem] md:text-[2.2rem]">
             Biblioteca pública
           </h2>
           <p className="max-w-[40ch] text-[1.1rem] text-ink-2">
@@ -313,10 +324,13 @@ function ForEveryone() {
   const demoSentence = 'Así suena un material leído en voz alta. Se resalta cada frase mientras se lee.';
   const [active, setActive] = useState(-1);
 
-  const cell = 'box grid content-between gap-6 p-6';
+  const cell = 'box box-hover grid content-between gap-6 p-6';
   return (
     <section aria-labelledby="cada-title" className="wrap py-16 md:py-24">
-      <h2 id="cada-title" className="text-[1.9rem] font-bold md:text-[2.2rem]">
+      <p className="badge mb-5" data-nonessential>
+        Accesibilidad
+      </p>
+      <h2 id="cada-title" className="display text-[1.9rem] md:text-[2.2rem]">
         Pensado para cada persona
       </h2>
       <p className="mt-3 max-w-[48ch] text-[1.1rem] text-ink-2">
@@ -446,7 +460,10 @@ function IndigenousLanguages() {
     <section aria-labelledby="lenguas-title" className="border-y border-line bg-surface py-16 md:py-24">
       <div className="wrap grid gap-12 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)]">
         <div className="grid content-start gap-6">
-          <h2 id="lenguas-title" className="text-[1.9rem] font-bold md:text-[2.2rem]">
+          <p className="badge justify-self-start" data-nonessential>
+            Wichí
+          </p>
+          <h2 id="lenguas-title" className="display text-[1.9rem] md:text-[2.2rem]">
             Lenguas originarias
           </h2>
           <p className="max-w-[46ch] text-[1.1rem] text-ink-2">
@@ -493,7 +510,10 @@ function Offline() {
         <span className="grid size-24 place-items-center rounded-full bg-tint-1 text-ink hc:border-2 hc:border-ink">
           <AirplaneTilt size={52} aria-hidden="true" />
         </span>
-        <h2 id="offline-title" className="text-[1.9rem] font-bold md:text-[2.2rem]">
+        <p className="badge" data-nonessential>
+          Modo avión
+        </p>
+        <h2 id="offline-title" className="display text-[1.9rem] md:text-[2.2rem]">
           Funciona sin internet
         </h2>
         <p className="max-w-[40ch] text-[1.15rem] text-ink-2">

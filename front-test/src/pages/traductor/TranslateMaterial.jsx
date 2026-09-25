@@ -1,14 +1,16 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, PaperPlaneTilt, Plus, SpeakerHigh, Stop } from '@phosphor-icons/react';
+import GlossaryGuide from '../../components/GlossaryGuide.jsx';
 import { AudioRecorder } from '../../components/inputs.jsx';
 import TermForm from '../../components/TermForm.jsx';
 import { Badge, Dialog, ErrorBox, Field, Loading, Switch } from '../../components/ui.jsx';
 import { useAnnouncer } from '../../context/AnnouncerContext.jsx';
 import { useAuth } from '../../context/AuthContext.jsx';
-import { materials, translations } from '../../lib/api.js';
+import { SEED_IDS } from '../../data/seedMaterials.js';
+import { glossary as glossaryApi, materials, translations } from '../../lib/api.js';
 import { LANGUAGES, WICHI_LANG_TAG } from '../../lib/config.js';
-import { getGlossary, markTerms, termsInText } from '../../lib/glossary.js';
+import { getGlossary, markTerms, mergeRemote, termsInText } from '../../lib/glossary.js';
 import { useAsync, useDocumentTitle } from '../../lib/hooks.js';
 import { canSpeak, readText } from '../../lib/speech.js';
 import { CheckCircle, Flask } from '@phosphor-icons/react';
@@ -43,6 +45,18 @@ export default function TranslateMaterial() {
 
   const [glossary, setGlossary] = useState(() => getGlossary('wichi'));
   const [editing, setEditing] = useState(null);
+
+  // Términos del servidor, para subrayarlos también en el texto original
+  useEffect(() => {
+    let vivo = true;
+    glossaryApi
+      .list('wichi')
+      .then((remotos) => vivo && remotos.length && setGlossary((g) => mergeRemote(g, remotos)))
+      .catch(() => {});
+    return () => {
+      vivo = false;
+    };
+  }, []);
   const [reading, setReading] = useState(null);
   const [form, setForm] = useState({
     language: 'wichi',
@@ -100,7 +114,7 @@ export default function TranslateMaterial() {
       </Link>
       <header className="mb-8 grid gap-2">
         <p className="font-bold text-ink-2">Traducir al wichí</p>
-        <h1 className="text-[2rem] leading-tight font-bold md:text-[2.4rem]">{m.title}</h1>
+        <h1 className="display text-[2rem] leading-tight md:text-[2.4rem]">{m.title}</h1>
       </header>
 
       <div className="grid gap-8 lg:grid-cols-2 lg:gap-10">
@@ -136,7 +150,7 @@ export default function TranslateMaterial() {
           </div>
 
           <div className="box grid gap-4 p-5 md:p-7">
-            <h2 className="text-[1.25rem] font-bold">Sugerencias del glosario</h2>
+            <h2 className="text-[1.25rem] font-bold">Glosario del equipo</h2>
             {found.length === 0 ? (
               <p className="text-ink-2">No encontramos términos del glosario en este texto.</p>
             ) : (
@@ -154,6 +168,8 @@ export default function TranslateMaterial() {
                             <Badge tone="ok" icon={CheckCircle}>
                               Revisado
                             </Badge>
+                          ) : t.estado === 'citado' ? (
+                            <Badge tone="accent">Del diccionario citado</Badge>
                           ) : (
                             <Badge tone="warn">Propuesto</Badge>
                           )}
@@ -174,6 +190,8 @@ export default function TranslateMaterial() {
               Agregar otro término
             </button>
           </div>
+
+          <GlossaryGuide materialId={m.id} esEjemplo={SEED_IDS.has(m.id)} onUseTerm={setEditing} />
         </section>
 
         <form onSubmit={submit} className="box grid content-start gap-6 p-5 md:p-7" noValidate aria-labelledby="trad-t">

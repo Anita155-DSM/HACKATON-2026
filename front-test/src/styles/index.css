@@ -9,65 +9,69 @@
    Tokens. Los colores cambian según las preferencias (data-* en <html>),
    así que los componentes nunca usan colores sueltos: solo estos nombres.
 
-   Paleta base del equipo: #EEF5FF  #FFFFFF  #5CE1E6  #B0E0FC
-   Como los cuatro son claros, el texto usa azul marino (#0B2540) para
-   llegar a 4.5:1 o más en cualquier fondo de la paleta.
+   Paleta FormA (la misma de la landing del equipo):
+   #041E2A azul petróleo · #072433 tarjeta oscura · #50E3C2 turquesa
+   #BDE0FE celeste suave · #023E8A azul de etiquetas · #F0F4F8 gris celeste
+   El texto usa el azul petróleo #041E2A, que llega a 4.5:1 o más sobre
+   cualquier fondo claro de la paleta.
 
    Regla de bordes redondeados (única en todo el sitio):
-   controles (botones, campos, chips) = 14px · contenedores = 22px.
+   campos = 14px · botones y chips = píldora · contenedores = 24px.
    ------------------------------------------------------------------ */
 
 :root {
   --text-scale: 1;
-  --c-bg: #eef5ff;
+  --c-bg: #f4f9ff;
   --c-surface: #ffffff;
-  --c-surface-2: #f6faff;
-  --c-accent: #5ce1e6;
-  --c-accent-strong: #2bbfc6;
-  --c-soft: #b0e0fc;
-  --c-ink: #0b2540;
-  --c-ink-2: #35506b;
-  --c-on-accent: #0b2540;
-  --c-line: #c9dcef;
-  --c-control-line: #5b7590;
-  --c-link: #0b5a78;
-  --c-focus: #0b2540;
+  --c-surface-2: #f0f4f8;
+  --c-accent: #50e3c2;
+  --c-accent-strong: #3ac5a5;
+  --c-soft: #bde0fe;
+  --c-ink: #041e2a;
+  --c-ink-2: #4a6572;
+  --c-on-accent: #041e2a;
+  --c-on-soft: #023e8a;
+  --c-line: #dce6ee;
+  --c-control-line: #46606e;
+  --c-link: #023e8a;
+  --c-focus: #041e2a;
   --c-danger: #a61b1b;
   --c-danger-bg: #fdecec;
   --c-ok: #0f6b3a;
   --c-ok-bg: #e5f6ec;
   --c-warn: #7a4b00;
   --c-warn-bg: #fff4dc;
-  --c-highlight: #b0e0fc;
-  --c-tint-1: #b0e0fc;
-  --c-tint-2: #5ce1e6;
-  --shadow-tint: 11 37 64;
+  --c-highlight: #bde0fe;
+  --c-tint-1: #f0f4f8;
+  --c-tint-2: #d7f5ee;
+  --shadow-tint: 4 30 42;
   color-scheme: light;
 }
 
 :root[data-theme='dark'] {
-  --c-bg: #0b1b2b;
-  --c-surface: #10263a;
-  --c-surface-2: #16324a;
-  --c-accent: #5ce1e6;
-  --c-accent-strong: #8aeef1;
-  --c-soft: #b0e0fc;
-  --c-ink: #eef5ff;
-  --c-ink-2: #b0e0fc;
-  --c-on-accent: #0b2540;
-  --c-line: #2a4661;
-  --c-control-line: #7d9bb8;
-  --c-link: #5ce1e6;
-  --c-focus: #5ce1e6;
+  --c-bg: #041e2a;
+  --c-surface: #072433;
+  --c-surface-2: #0c2e3f;
+  --c-accent: #50e3c2;
+  --c-accent-strong: #7cedd6;
+  --c-soft: #bde0fe;
+  --c-ink: #eaf4f8;
+  --c-ink-2: #a9c4cf;
+  --c-on-accent: #041e2a;
+  --c-on-soft: #023e8a;
+  --c-line: #103b4f;
+  --c-control-line: #6e93a3;
+  --c-link: #50e3c2;
+  --c-focus: #50e3c2;
   --c-danger: #ffb4ab;
   --c-danger-bg: #3b1518;
   --c-ok: #8be0b0;
   --c-ok-bg: #11321f;
   --c-warn: #ffd58a;
   --c-warn-bg: #3a2a0c;
-  --c-highlight: #1f5673;
-  --c-tint-1: #17415c;
-  --c-tint-2: #0f4f58;
+  --c-highlight: #14506a;
+  --c-tint-1: #0c3347;
+  --c-tint-2: #0b4a49;
   --shadow-tint: 0 8 16;
   color-scheme: dark;
 }
@@ -80,11 +84,12 @@
   --c-soft: #ffffff;
   --c-ink: #000a14;
   --c-ink-2: #000a14;
+  --c-on-soft: #000a14;
   --c-line: #000a14;
   --c-control-line: #000a14;
   --c-link: #002f6c;
   --c-focus: #000a14;
-  --c-accent: #5ce1e6;
+  --c-accent: #50e3c2;
   --c-on-accent: #000a14;
   --c-highlight: #ffe45c;
   --c-tint-1: #ffffff;
@@ -98,11 +103,12 @@
   --c-soft: #000000;
   --c-ink: #ffffff;
   --c-ink-2: #ffffff;
+  --c-on-soft: #ffffff;
   --c-line: #ffffff;
   --c-control-line: #ffffff;
-  --c-link: #5ce1e6;
+  --c-link: #50e3c2;
   --c-focus: #ffe45c;
-  --c-accent: #5ce1e6;
+  --c-accent: #50e3c2;
   --c-on-accent: #000000;
   --c-highlight: #5c4d00;
   --c-tint-1: #000000;
@@ -111,6 +117,9 @@
 
 @theme inline {
   --font-sans: 'Atkinson Hyperlegible', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  /* Títulos con serif, como la landing de FormA. Sin descargas: fuentes del sistema,
+     para que la app siga abriendo igual de rápido y sin internet. */
+  --font-display: 'Iowan Old Style', 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, 'Times New Roman', serif;
   --color-bg: var(--c-bg);
   --color-surface: var(--c-surface);
   --color-surface-2: var(--c-surface-2);
@@ -120,6 +129,7 @@
   --color-ink: var(--c-ink);
   --color-ink-2: var(--c-ink-2);
   --color-on-accent: var(--c-on-accent);
+  --color-on-soft: var(--c-on-soft);
   --color-line: var(--c-line);
   --color-control: var(--c-control-line);
   --color-link: var(--c-link);
@@ -134,7 +144,8 @@
   --color-tint-1: var(--c-tint-1);
   --color-tint-2: var(--c-tint-2);
   --radius-control: 14px;
-  --radius-box: 22px;
+  --radius-pill: 999px;
+  --radius-box: 24px;
 }
 
 /* Variantes para escribir estilos que dependen de una preferencia */
@@ -171,8 +182,8 @@
   }
 
   ::selection {
-    background: var(--c-soft);
-    color: #0b2540;
+    background: var(--c-accent);
+    color: #041e2a;
   }
 
   /* Foco siempre visible y grueso (WCAG 2.4.7 y 2.4.13) */
@@ -238,6 +249,63 @@
   --c-bg: var(--c-surface);
 }
 
+/* ------------------------------------------------------------------
+   Barra superior oscura (identidad FormA).
+   No cambia ningún componente: redefine los tokens solo dentro del header,
+   así los botones, el menú y el selector de idioma se adaptan solos.
+   En alto contraste no se aplica, para no pisar el blanco y negro.
+   ------------------------------------------------------------------ */
+
+:root:not([data-contrast='high']) .site-header {
+  --c-bg: #041e2a;
+  --c-surface: #072433;
+  --c-surface-2: #0c2e3f;
+  --c-ink: #ffffff;
+  --c-ink-2: #a9c4cf;
+  --c-line: #0e3244;
+  --c-control-line: #5b8496;
+  --c-link: #50e3c2;
+  --c-focus: #50e3c2;
+  --c-soft: #50e3c2;
+  --c-on-soft: #041e2a;
+  color-scheme: dark;
+}
+
+/* De noche el fondo ya es oscuro: la barra se aclara un poco para despegarse */
+:root[data-theme='dark']:not([data-contrast='high']) .site-header {
+  --c-bg: #072433;
+  --c-surface: #0c2e3f;
+  --c-surface-2: #14405a;
+  --c-line: #14405a;
+}
+
+/* Títulos grandes en serif, como la landing. Los textos y los subtítulos siguen
+   en Atkinson Hyperlegible, que es la tipografía accesible del proyecto. */
+.display {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: -0.015em;
+}
+[data-readable='on'] .display,
+[data-contrast='high'] .display {
+  font-family: var(--font-sans);
+  font-weight: 700;
+  letter-spacing: normal;
+}
+
+/* El logo de la marca, en serif como en la landing */
+.brand {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: 0.02em;
+}
+[data-readable='on'] .brand,
+[data-contrast='high'] .brand {
+  font-family: var(--font-sans);
+  font-weight: 700;
+  letter-spacing: normal;
+}
+
 /* Borde visible en alto contraste para todo lo que es una caja */
 [data-contrast='high'] .box,
 [data-contrast='high'] .control {
@@ -272,6 +340,43 @@
     background: var(--c-surface);
     border: 1px solid var(--c-line);
     border-radius: var(--radius-box);
+    box-shadow: 0 1px 2px rgb(var(--shadow-tint) / 0.06);
+  }
+  [data-contrast='high'] .box {
+    box-shadow: none;
+  }
+
+  /* Tarjeta que reacciona al pasar el mouse (grillas de materiales, accesibilidad) */
+  .box-hover {
+    transition:
+      box-shadow 0.18s ease,
+      transform 0.18s ease;
+  }
+  .box-hover:hover {
+    box-shadow: 0 10px 28px rgb(var(--shadow-tint) / 0.12);
+  }
+  [data-contrast='high'] .box-hover:hover,
+  [data-motion='reduce'] .box-hover:hover {
+    box-shadow: none;
+  }
+
+  /* Etiqueta de sección ("Accesibilidad", "Cómo funciona"): píldora celeste */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.35rem 1.1rem;
+    border-radius: var(--radius-pill);
+    background: var(--c-soft);
+    color: var(--c-on-soft);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  [data-contrast='high'] .badge {
+    border: 2px solid var(--c-ink);
+    color: var(--c-ink);
   }
 
   /* Botones: mínimo 48 x 48 px, una sola línea, empuje táctil al tocar */
@@ -282,8 +387,8 @@
     gap: 0.5rem;
     min-height: 2.75rem; /* 49.5px con base 18px */
     min-width: 2.75rem;
-    padding: 0.6rem 1.15rem;
-    border-radius: var(--radius-control);
+    padding: 0.6rem 1.35rem;
+    border-radius: var(--radius-pill);
     font-weight: 700;
     line-height: 1.2;
     text-align: center;
@@ -366,7 +471,7 @@
   .input {
     width: 100%;
     min-height: 2.75rem;
-    padding: 0.6rem 0.85rem;
+    padding: 0.6rem 0.95rem;
     border-radius: var(--radius-control);
     border: 2px solid var(--c-control-line);
     background: var(--c-surface);
@@ -403,8 +508,8 @@
     align-items: center;
     gap: 0.45rem;
     min-height: 2.75rem;
-    padding: 0.5rem 1rem;
-    border-radius: var(--radius-control);
+    padding: 0.5rem 1.1rem;
+    border-radius: var(--radius-pill);
     border: 2px solid var(--c-control-line);
     background: var(--c-surface);
     color: var(--c-ink);
@@ -424,7 +529,7 @@
   .chip:has(input:checked) {
     background: var(--c-soft);
     border-color: var(--c-ink);
-    color: #0b2540;
+    color: var(--c-on-soft);
   }
   [data-contrast='high'] .chip[aria-pressed='true'],
   [data-contrast='high'] .chip[aria-checked='true'],

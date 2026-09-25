@@ -1,6 +1,9 @@
-// Glosario comunitario. El backend todavía no tiene GET/POST /api/glossary (API.md: "Pendiente si sobra tiempo"),
-// así que por ahora vive en este dispositivo: semilla + términos propuestos o revisados acá.
-// Cuando exista el endpoint, reemplazar getGlossary / saveTerm por llamadas a la API.
+// Glosario comunitario. Se arma con tres cosas:
+//   1. la semilla de data/glossary.js (los términos que el documento pide citar),
+//   2. lo que se propone o completa en este dispositivo (localStorage),
+//   3. los términos que ya están en el servidor (GET /api/glossary), que se mezclan
+//      con mergeRemote: completan un término vacío o se suman como nuevos.
+// Guardar sigue siendo local: el backend todavía no tiene POST /api/glossary.
 import { SEED_GLOSSARY } from '../data/glossary.js';
 import { load, save } from './storage.js';
 
@@ -24,6 +27,38 @@ export function saveTerm(term) {
   local[targetId] = { ...(local[targetId] || {}), ...term, id: targetId, es: term.es.trim(), lengua: term.lengua || 'wichi' };
   save(KEY, local);
   return local[targetId];
+}
+
+// Un término del servidor con la forma que usan las pantallas.
+// Estado "citado": sale de un diccionario con fuente, no de una revisión de la comunidad.
+export const mapRemote = (t) => ({
+  id: `api-${t.id}`,
+  es: t.es,
+  wichi: t.term || '',
+  variante: t.note || '',
+  fuente: t.source || 'Glosario del servidor',
+  tema: 'Del servidor',
+  lengua: t.language || 'wichi',
+  estado: 'citado',
+});
+
+// Mezcla lo del servidor con lo del dispositivo. Lo local manda: si alguien ya completó
+// un término acá, no se pisa; si estaba vacío, se completa con el del servidor.
+export function mergeRemote(locales, remotos = []) {
+  const clave = (t) => t.es.trim().toLowerCase();
+  const porClave = new Map(locales.map((t) => [clave(t), t]));
+  const extra = [];
+  for (const r of remotos.map(mapRemote)) {
+    const local = porClave.get(clave(r));
+    if (!local) {
+      extra.push(r);
+      continue;
+    }
+    if (!local.wichi) {
+      porClave.set(clave(r), { ...local, wichi: r.wichi, variante: local.variante || r.variante, fuente: local.fuente || r.fuente, estado: 'citado' });
+    }
+  }
+  return [...porClave.values(), ...extra].sort((a, b) => a.es.localeCompare(b.es));
 }
 
 // Encuentra los términos del glosario que aparecen en un texto

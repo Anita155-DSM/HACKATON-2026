@@ -74,7 +74,7 @@ export default function MyMaterials() {
     <div className="wrap py-10 md:py-14">
       <header className="mb-8 grid gap-2">
         <p className="font-bold text-ink-2">Mis materiales</p>
-        <h1 className="text-[2rem] leading-tight font-bold md:text-[2.4rem]">{curso.name}</h1>
+        <h1 className="display text-[2rem] leading-tight md:text-[2.4rem]">{curso.name}</h1>
         {meta && <p className="text-ink-2">{meta}</p>}
         <div className="mt-3 flex flex-wrap gap-2" data-nonessential>
           <button type="button" className="btn btn-secondary" onClick={refresh} disabled={!online}>

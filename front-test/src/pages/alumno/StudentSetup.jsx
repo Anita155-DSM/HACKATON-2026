@@ -22,7 +22,7 @@ export default function StudentSetup() {
     <div className="wrap py-10 md:py-14">
       <div className="mx-auto grid max-w-xl gap-10">
         <header className="grid gap-2">
-          <h1 className="text-[2rem] leading-tight font-bold">¡Te damos la bienvenida!</h1>
+          <h1 className="display text-[2rem] leading-tight">¡Te damos la bienvenida!</h1>
           {curso && <p className="text-[1.1rem] text-ink-2">Ya estás en {curso.name}. Elegí cómo querés tus materiales.</p>}
         </header>
 

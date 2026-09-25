@@ -130,7 +130,7 @@ export default function MaterialView() {
         <article className="grid content-start gap-7">
           <header className="grid gap-2">
             {meta && <p className="font-bold text-ink-2">{meta}</p>}
-            <h1 className="text-[2rem] leading-tight font-bold md:text-[2.5rem]">{m.title}</h1>
+            <h1 className="display text-[2rem] leading-tight md:text-[2.5rem]">{m.title}</h1>
             {state.desde === 'celular' && (
               <p className="flex items-center gap-2 font-bold text-ok">
                 <Info size={20} aria-hidden="true" />

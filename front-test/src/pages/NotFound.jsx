@@ -12,7 +12,7 @@ export default function NotFound() {
         icon={Compass}
         title="No encontramos esta página"
         action={
-          <Link to="/?inicio=1" className="btn btn-primary">
+          <Link to="/" className="btn btn-primary">
             Ir al inicio
           </Link>
         }

@@ -96,7 +96,7 @@ export default function TeacherMaterial() {
       </button>
 
       <header className="mb-8 grid gap-4">
-        <h1 className="text-[2rem] leading-tight font-bold md:text-[2.4rem]">{m.title}</h1>
+        <h1 className="display text-[2rem] leading-tight md:text-[2.4rem]">{m.title}</h1>
         <div className="flex flex-wrap gap-2">
           <Badge tone={status.tone}>Lectura fácil: {status.label}</Badge>
           <Badge>{SOURCE_LABEL[m.textSource] || 'Texto'}</Badge>

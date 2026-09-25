@@ -7,6 +7,12 @@
 
 export const GLOSSARY_SOURCES = [
   {
+    id: 'lhamtes',
+    label: 'Glosario wichí lhämtes: Las palabras de la gente (Néstor Elio Fernández, 2017)',
+    note: 'Ediciones SAIJ / INAI. Libre reproducción citando la fuente. Es el libro que usa la guía del traductor',
+    href: 'http://www.saij.gob.ar/',
+  },
+  {
     id: 'diwica',
     label: 'DIWICA, Diccionario castellano-wichí',
     note: 'Autoría colectiva y construcción permanente',

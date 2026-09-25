@@ -5,9 +5,10 @@ import { AnnouncerProvider, VoiceGuide } from './context/AnnouncerContext.jsx';
 import { AuthProvider, useAuth } from './context/AuthContext.jsx';
 import { PreferencesProvider } from './context/PreferencesContext.jsx';
 import { getCurso } from './lib/student.js';
-import Landing from './pages/Landing.jsx';
+import LandingPage from './pages/landing/LandingPage.jsx';
 
-// La landing va en el bundle inicial (liviana). El resto se carga cuando se usa.
+// La portada va en el bundle inicial. El resto se carga cuando se usa.
+const AppHome = lazy(() => import('./pages/Landing.jsx'));
 const StudentJoin = lazy(() => import('./pages/alumno/StudentJoin.jsx'));
 const StudentSetup = lazy(() => import('./pages/alumno/StudentSetup.jsx'));
 const MyMaterials = lazy(() => import('./pages/alumno/MyMaterials.jsx'));
@@ -25,12 +26,12 @@ const Glossary = lazy(() => import('./pages/traductor/Glossary.jsx'));
 const Accessibility = lazy(() => import('./pages/Accessibility.jsx'));
 const NotFound = lazy(() => import('./pages/NotFound.jsx'));
 
-// Quien ya tiene un curso guardado va directo a sus materiales (sección 9, "Cómo se conecta con la app").
-// Con ?inicio=1 (el logo) se puede volver a ver la landing.
+// Inicio de la plataforma. Quien ya tiene un curso guardado va directo a sus materiales
+// (sección 9, "Cómo se conecta con la app"). Con ?inicio=1 se ve igual esta pantalla.
 function Home() {
   const [params] = useSearchParams();
   if (getCurso() && !params.has('inicio')) return <Navigate to="/mis-materiales" replace />;
-  return <Landing />;
+  return <AppHome />;
 }
 
 function RequireAuth({ children, from }) {
@@ -47,8 +48,11 @@ export default function App() {
           <VoiceGuide />
           <BrowserRouter>
             <Routes>
+              {/* La portada pública, con su propia barra y su pie */}
+              <Route path="/" element={<LandingPage />} />
+
               <Route element={<Layout />}>
-                <Route index element={<Home />} />
+                <Route path="plataforma" element={<Home />} />
 
                 <Route path="alumno" element={<StudentJoin />} />
                 <Route path="alumno/bienvenida" element={<StudentSetup />} />

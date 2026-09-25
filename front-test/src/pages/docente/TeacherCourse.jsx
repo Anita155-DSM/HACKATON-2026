@@ -35,7 +35,7 @@ export default function TeacherCourse() {
                   .filter(Boolean)
                   .join(', ')}
               </p>
-              <h1 className="text-[2rem] leading-tight font-bold md:text-[2.4rem]">{data.curso.name}</h1>
+              <h1 className="display text-[2rem] leading-tight md:text-[2.4rem]">{data.curso.name}</h1>
               <div className="mt-3">
                 <Link to={`/docente/subir?curso=${data.curso.id}`} className="btn btn-primary">
                   <UploadSimple size={22} aria-hidden="true" />

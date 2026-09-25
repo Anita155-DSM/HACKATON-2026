@@ -39,7 +39,7 @@ function StatusBars() {
         </div>
       )}
       {missing && (
-        <div role="status" className="border-b border-line bg-soft text-[#0b2540] hc:bg-bg hc:text-ink">
+        <div role="status" className="border-b border-line bg-soft text-on-soft hc:bg-bg hc:text-ink">
           <p className="wrap py-2 text-[0.95rem]">
             <strong>Esta página todavía no está en wichí.</strong> La traducción la tiene que hacer o revisar una persona hablante de la
             comunidad. Por ahora se muestra en castellano.

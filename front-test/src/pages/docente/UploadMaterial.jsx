@@ -208,7 +208,7 @@ export default function UploadMaterial() {
                     ref={fileRef}
                     type="file"
                     accept="application/pdf,text/plain,.pdf,.txt"
-                    className="input file:mr-4 file:rounded-[10px] file:border-0 file:bg-soft file:px-4 file:py-2 file:font-bold file:text-[#0b2540]"
+                    className="input file:mr-4 file:rounded-[10px] file:border-0 file:bg-soft file:px-4 file:py-2 file:font-bold file:text-on-soft"
                     onChange={(e) => setFile(e.target.files?.[0] || null)}
                   />
                 )}
