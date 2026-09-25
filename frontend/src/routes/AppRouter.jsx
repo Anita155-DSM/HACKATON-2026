@@ -6,7 +6,7 @@ import AuthLayout from "../layouts/AuthLayout";
 import MainLayout from "../layouts/MainLayout";
 
 // Importación corregida apuntando a la carpeta SRC
-import Landing from "../../public/pages/Landing.jsx";
+import Landing from "../pages/public/Landing.jsx";
 import { Login, Register } from "../features/auth/pages/index.js";
 import Profile from "../pages/profile/Profile";
 import Settings from "../pages/settings/Settings.jsx";
