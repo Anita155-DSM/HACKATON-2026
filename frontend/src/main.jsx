@@ -1,22 +1,18 @@
-import { StrictMode } from "react";
-import { createRoot } from "react-dom/client";
-import "./assets/index.css";
-import App from "./App.jsx";
-import { BrowserRouter } from "react-router-dom";
-import { ThemeProvider } from "./context/ThemeContext.jsx";
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import { BrowserRouter } from 'react-router-dom'; // 1. Importamos el Router
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import App from './App.jsx';
+import './assets/index.css';
 
-// Activación del Mock de Axios si la variable de entorno está en true
-if (import.meta.env.VITE_USE_MOCK === "true") {
-  import("./mocks/mockBackend.js");
-  console.log("Ejecutando con Backend Simulado (Mock)");
-}
+const queryClient = new QueryClient();
 
-createRoot(document.getElementById("root")).render(
-  <StrictMode>
-    <ThemeProvider>
+ReactDOM.createRoot(document.getElementById('root')).render(
+  <React.StrictMode>
+    <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <App />
       </BrowserRouter>
-    </ThemeProvider>
-  </StrictMode>
-);
+    </QueryClientProvider>
+  </React.StrictMode>,
+)

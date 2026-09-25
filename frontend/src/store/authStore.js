@@ -1,32 +1,21 @@
 import { create } from 'zustand';
 
-// ¡Acá está la magia! Solo renombramos "useAuthStore" a "useAuth"
-export const useAuth = create((set) => ({
+export const useAuthStore = create((set) => ({
+  // 1. Estado inicial: intentamos recuperar los datos guardados
   user: JSON.parse(localStorage.getItem('user')) || null,
   accessToken: localStorage.getItem('accessToken') || null,
 
-  isAuthenticated: !!localStorage.getItem('accessToken'),
-  loading: false,
-
+  // 2. Acción para iniciar sesión
   login: (userData, token) => {
     localStorage.setItem('user', JSON.stringify(userData));
     localStorage.setItem('accessToken', token);
-
-    set({
-      user: userData,
-      accessToken: token,
-      isAuthenticated: true
-    });
+    set({ user: userData, accessToken: token });
   },
 
+  // 3. Acción para cerrar sesión
   logout: () => {
     localStorage.removeItem('user');
     localStorage.removeItem('accessToken');
-
-    set({
-      user: null,
-      accessToken: null,
-      isAuthenticated: false
-    });
+    set({ user: null, accessToken: null });
   }
 }));

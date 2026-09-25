@@ -1,78 +1,64 @@
-import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { formatDistanceToNow } from "date-fns";
+import { es } from "date-fns/locale"; // Importamos el idioma español
 import { useAuth } from "../../hooks/useAuth.js";
 import { Card, Button } from "../../components/ui";
 import { FaUsers, FaTasks, FaChartLine, FaPlus } from "react-icons/fa";
 import clienteAxios from "../../config/axios";
-import { toast } from "sonner";
 import { Loading } from "../../components/layout";
 
 export default function Home() {
   const { user } = useAuth();
-  const [usuariosAPI, setUsuariosAPI] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const nombreMostrar = user ? `${user.firstName || ''} ${user.lastName || ''}`.trim() : "Invitado";
 
-  const nombreMostrar = user 
-    ? `${user.firstName || ''} ${user.lastName || ''}`.trim() 
-    : "Invitado";
+  // 1. MAGIA DE REACT QUERY: Adiós useState y useEffect. Todo en un hook.
+  const { data: usuariosAPI = [], isLoading } = useQuery({
+    queryKey: ['users'],
+    queryFn: async () => {
+      const { data } = await clienteAxios.get("/users");
+      return data.data.items || [];
+    }
+  });
 
-  // 1. CARGAMOS LOS DATOS REALES DE TU BASE DE DATOS
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const { data } = await clienteAxios.get("/users");
-        // Tu backend devuelve la lista dentro de data.data.items
-        setUsuariosAPI(data.data.items || []);
-      } catch (error) {
-        toast.error("Error al cargar los datos del panel");
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, []);
+  // React Query maneja el estado de carga por nosotros
+  if (isLoading) return <Loading />;
 
-  if (loading) return <Loading />;
-
-  // 2. CONECTAMOS LAS MÉTRICAS A LOS DATOS REALES
   const metricas = [
     {
       titulo: "Usuarios Totales",
-      valor: usuariosAPI.length.toString(), // <-- DATO REAL 
+      valor: usuariosAPI.length.toString(),
       icono: <FaUsers className="text-blue-500 text-2xl" />,
-      fondo: "bg-blue-50 dark:bg-blue-900/30", // Adaptado al modo oscuro
+      fondo: "bg-blue-50 dark:bg-blue-900/30",
     },
     {
       titulo: "Tareas Activas",
-      valor: "0", // Lo dejamos en 0 hasta que conectes una tabla de tareas
+      valor: "0",
       icono: <FaTasks className="text-green-500 text-2xl" />,
       fondo: "bg-green-50 dark:bg-green-900/30",
     },
     {
       titulo: "Visitas Mensuales",
-      valor: "1", // Como no tenés sistema de analíticas aún, lo dejamos estático por ahora
+      valor: "1",
       icono: <FaChartLine className="text-purple-500 text-2xl" />,
       fondo: "bg-purple-50 dark:bg-purple-900/30",
     },
   ];
 
-  // 3. ARMAMOS LA TABLA CON LOS ÚLTIMOS 5 USUARIOS REALES REGISTRADOS
-  // (Tomamos los primeros 5 del array asumiendo que el backend los ordena por fecha)
   const actividadReciente = usuariosAPI.slice(0, 5).map(u => ({
     id: u.id,
     accion: "Nuevo usuario registrado",
     user: `${u.firstName} ${u.lastName}`,
-    fecha: new Date(u.createdAt).toLocaleDateString() // Formateamos la fecha real
+    // 2. MAGIA DE DATE-FNS: Convierte la fecha ISO a "hace X minutos/días" en español
+    fecha: formatDistanceToNow(new Date(u.createdAt), { addSuffix: true, locale: es })
   }));
 
   return (
     <div className="space-y-6 animate-fade-in">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          {/* Agregado dark:text-white */}
           <h1 className="text-2xl font-bold text-gray-800 dark:text-white transition-colors">
             ¡Hola de nuevo, {nombreMostrar}!
           </h1>
-          {/* Agregado dark:text-gray-400 */}
           <p className="text-gray-500 dark:text-gray-400 text-sm mt-1 transition-colors">
             Resumen de tu sistema al día de hoy.
           </p>
@@ -122,8 +108,8 @@ export default function Home() {
                     <td className="py-3 px-4 font-medium text-gray-900 dark:text-white">
                       {item.user}
                     </td>
-                    <td className="py-3 px-4 text-right text-gray-500 dark:text-gray-400">
-                      {item.fecha}
+                    <td className="py-3 px-4 text-right text-gray-500 dark:text-gray-400 capitalize">
+                      {item.fecha} {/* Acá se mostrará "hace 5 minutos" */}
                     </td>
                   </tr>
                 ))
@@ -140,4 +126,4 @@ export default function Home() {
       </Card>
     </div>
   );
-}
+} 

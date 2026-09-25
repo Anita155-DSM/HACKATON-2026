@@ -1,8 +1,8 @@
-import { useState, useEffect, useContext } from "react";
-import { ThemeContext } from "../context/ThemeContext";
+import { useState, useEffect } from "react";
+import { useThemeStore } from "../store/themeStore";
 
 export const useSettings = () => {
-  const { theme, setTheme } = useContext(ThemeContext);
+  const { theme, setTheme } = useThemeStore();
 
   const [contrast, setContrast] = useState(() => localStorage.getItem("contrast") === "true");
   const [sounds, setSounds] = useState(() => localStorage.getItem("sounds") !== "false");
