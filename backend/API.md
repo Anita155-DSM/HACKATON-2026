@@ -1,12 +1,8 @@
 # API del backend — Contratos y alcance
 
-Documento unificado del backend y fuente de verdad compartida del equipo. Incluye
-los endpoints implementados y los contratos que se están desarrollando para cursos,
-materiales y traducciones.
+Documento unificado del backend y fuente de verdad compartida del equipo. Incluye los endpoints implementados y los contratos que se están desarrollando para cursos, materiales y traducciones.
 
-**Regla:** si cambia la forma de una respuesta, quien lo programa actualiza este
-archivo y avisa en el chat. Un endpoint terminado y probado se marca como `LISTO`;
-uno en desarrollo como `EN DESARROLLO`; uno pendiente como `PENDIENTE`.
+**Regla:** si cambia la forma de una respuesta, quien lo programa actualiza este archivo y avisa en el chat. Un endpoint terminado y probado se marca como `LISTO`; uno en desarrollo como `EN DESARROLLO`; uno pendiente como `PENDIENTE`.
 
 ## Convención de respuesta
 
@@ -24,12 +20,9 @@ Todas las respuestas usan el mismo envelope:
 
 ## Estado actual del backend
 
-El backend es la base de una API REST desarrollada con JavaScript, Node.js y
-Express. Actualmente están implementados los módulos de salud de la API,
-autenticación y gestión de usuarios. La conexión de datos utiliza PostgreSQL a
-través de Supabase mediante `DATABASE_URL`.
+El backend es la base de una API REST desarrollada con JavaScript, Node.js y Express. Actualmente están implementados los módulos de salud de la API, autenticación y gestión de usuarios. La conexión de datos utiliza PostgreSQL a través de Supabase mediante `DATABASE_URL`.
 
-### Salud y autenticación [LISTO]
+### Salud y autenticación \[LISTO\]
 
 | Método | Ruta | Auth | Descripción |
 | --- | --- | --- | --- |
@@ -45,7 +38,7 @@ través de Supabase mediante `DATABASE_URL`.
 | POST | `/api/auth/reset-password` | No | Restablece la contraseña con un token |
 | PATCH | `/api/auth/change-password` | Sí | Cambia la contraseña actual |
 
-### Usuarios [LISTO]
+### Usuarios \[LISTO\]
 
 | Método | Ruta | Auth | Descripción |
 | --- | --- | --- | --- |
@@ -56,9 +49,7 @@ través de Supabase mediante `DATABASE_URL`.
 | PATCH | `/api/users/:id/status` | Admin | Activa o desactiva un usuario |
 | DELETE | `/api/users/:id` | Admin | Elimina un usuario |
 
-La autenticación usa JWT, las contraseñas se almacenan con `bcryptjs` y el campo
-`tokenVersion` permite invalidar tokens anteriores. Las rutas de usuarios requieren
-token; las operaciones sobre otros usuarios requieren rol `admin`.
+La autenticación usa JWT, las contraseñas se almacenan con `bcryptjs` y el campo `tokenVersion` permite invalidar tokens anteriores. Las rutas de usuarios requieren token; las operaciones sobre otros usuarios requieren rol `admin`.
 
 ### Cuerpos principales
 
@@ -96,46 +87,61 @@ token; las operaciones sobre otros usuarios requieren rol `admin`.
 
 ## Cursos (Nata)
 
-### POST /api/courses [PENDIENTE]
+### POST /api/courses \[PENDIENTE\]
+
 Crea un curso y le genera un código único de 4 dígitos.
+
 - **Auth:** docente (Bearer token)
 - **Body:**
+
 ```json
 { "name": "3ro Biología", "level": "secundaria", "year": 3, "subject": "Biología" }
 ```
+
 - **201:**
+
 ```json
 { "exito": true, "mensaje": "Curso creado", "data": { "curso": { "id": 1, "name": "3ro Biología", "code": "4827", "level": "secundaria", "year": 3, "subject": "Biología" } } }
 ```
+
 - **Errores:** 400 (datos inválidos), 401 (sin token)
 - **Nota:** `code` es string de 4 dígitos (puede tener ceros a la izquierda, ej. "0427").
 
-### GET /api/courses/mine [PENDIENTE]
+### GET /api/courses/mine \[PENDIENTE\]
+
 Lista los cursos del docente autenticado.
+
 - **Auth:** docente (Bearer token)
 - **200:**
+
 ```json
 { "exito": true, "mensaje": "OK", "data": { "cursos": [ { "id": 1, "name": "3ro Biología", "code": "4827", "level": "secundaria", "year": 3, "subject": "Biología" } ] } }
 ```
+
 - **Errores:** 401 (sin token)
 
-### GET /api/courses/code/:code [PENDIENTE]
-Devuelve un curso y sus materiales a partir del código. **Público** (sin login), con
-`express-rate-limit` para evitar que prueben todos los códigos por fuerza bruta.
+### GET /api/courses/code/:code \[PENDIENTE\]
+
+Devuelve un curso y sus materiales a partir del código. **Público** (sin login), con `express-rate-limit` para evitar que prueben todos los códigos por fuerza bruta.
+
 - **Auth:** no
 - **Params:** `code` (string de 4 dígitos)
 - **200:**
+
 ```json
 { "exito": true, "mensaje": "OK", "data": { "curso": { "id": 1, "name": "3ro Biología", "code": "4827" }, "materiales": [ { "id": 10, "title": "Fotosíntesis", "versiones": ["texto", "lectura_facil", "wichi"] } ] } }
 ```
+
 - **Errores:** 404 (código inexistente), 429 (demasiados intentos)
 
 ---
 
 ## Traducciones (Nata)
 
-### POST /api/materials/:id/translations [PENDIENTE]
+### POST /api/materials/:id/translations \[PENDIENTE\]
+
 Guarda una traducción de un material y su archivo de audio.
+
 - **Auth:** docente / traductor (Bearer token)
 - **Content-Type:** `multipart/form-data` (por el audio, vía multer)
 - **Params:** `id` = id del material
@@ -146,17 +152,18 @@ Guarda una traducción de un material y su archivo de audio.
   - `validated` (boolean; `false` si es simulada)
   - `audio` (archivo de audio)
 - **201:**
+
 ```json
 { "exito": true, "mensaje": "Traducción guardada", "data": { "traduccion": { "id": 5, "materialId": 10, "language": "wichi", "text": "...", "audioUrl": "/uploads/tr-5.mp3", "validated": false, "author": "..." } } }
 ```
+
 - **Errores:** 400 (datos inválidos), 401 (sin token), 404 (material inexistente)
 
 ---
 
 ## Materiales (Ana)
 
-Módulo en desarrollo. La base es `/api/materials` y todas sus respuestas usan el
-envelope `{ exito, mensaje, data }`.
+Módulo en desarrollo. La base es `/api/materials` y todas sus respuestas usan el envelope `{ exito, mensaje, data }`.
 
 | Estado | Método | Ruta | Auth | Descripción |
 | --- | --- | --- | --- | --- |
@@ -178,17 +185,14 @@ Usa `multipart/form-data`:
 | `archivo` | PDF o `.txt` ≤ 10 MB | Uno de los dos | El PDF escaneado puede transcribirse con Claude |
 | `text` | string ≤ 50.000 | Uno de los dos | Texto pegado directamente |
 | `courseId` | UUID | No | Si falta, el material queda sin curso |
-| `level` | `primaria` \| `secundaria` | No | Nivel educativo |
+| `level` | `primaria` | `secundaria` | No | Nivel educativo |
 | `grade` | 1–7 | No | Grado |
 | `subject`, `license`, `source`, `author` | string | No | Metadatos opcionales |
-| `visibility` | `curso` \| `publico` | No | Por defecto `curso` |
+| `visibility` | `curso` | `publico` | No | Por defecto `curso` |
 
-La respuesta `201` devuelve el material en `data`. El pedido puede tardar hasta un
-minuto, o hasta dos si el PDF es escaneado.
+La respuesta `201` devuelve el material en `data`. El pedido puede tardar hasta un minuto, o hasta dos si el PDF es escaneado.
 
-Errores previstos: `400` (archivo inválido), `403` (curso de otro docente), `404`
-(curso inexistente), `422` (datos inválidos o PDF ilegible), `429` (rate limit) y
-`503` (no se pudo procesar el texto de imágenes).
+Errores previstos: `400` (archivo inválido), `403` (curso de otro docente), `404`(curso inexistente), `422` (datos inválidos o PDF ilegible), `429` (rate limit) y `503` (no se pudo procesar el texto de imágenes).
 
 ### GET /api/materials/:id
 
@@ -221,22 +225,15 @@ Errores previstos: `400` (archivo inválido), `403` (curso de otro docente), `40
 }
 ```
 
-`easyReadText` llega como texto plano. `textSource: "transcrito"` indica que
-Claude leyó información de imágenes; la interfaz docente debe mostrar un aviso
-para revisarlo. Las imágenes informativas se describen entre corchetes:
-`[Imagen: …]`.
+`easyReadText` llega como texto plano. `textSource: "transcrito"` indica que Claude leyó información de imágenes; la interfaz docente debe mostrar un aviso para revisarlo. Las imágenes informativas se describen entre corchetes: `[Imagen: …]`.
 
 ### GET /api/materials (biblioteca)
 
-`data` devuelve un array con `id`, `title`, `level`, `grade`, `subject`, `license`,
-`source`, `author`, `sourceType`, `easyReadStatus` y `updatedAt`. El máximo es de
-50 elementos. Para el contenido completo se utiliza `GET /api/materials/:id`.
+`data` devuelve un array con `id`, `title`, `level`, `grade`, `subject`, `license`, `source`, `author`, `sourceType`, `easyReadStatus` y `updatedAt`. El máximo es de 50 elementos. Para el contenido completo se utiliza `GET /api/materials/:id`.
 
 ### PATCH /api/materials/:id
 
-Acepta `title`, `level`, `grade`, `subject`, `license`, `source`, `author`,
-`visibility`, `accessibleText` y `easyReadText`. Si se envía `easyReadText`, el
-estado pasa a `manual`. `accessibleText` permite corregir una transcripción.
+Acepta `title`, `level`, `grade`, `subject`, `license`, `source`, `author`, `visibility`, `accessibleText` y `easyReadText`. Si se envía `easyReadText`, el estado pasa a `manual`. `accessibleText` permite corregir una transcripción.
 
 ### POST /api/materials/:id/lectura-facil
 
@@ -244,23 +241,19 @@ Sin body. Devuelve `200` con el material actualizado o `503` si el LLM no respon
 
 ### POST /api/materials/:id/transcribir
 
-Sin body. Relee el PDF original, reemplaza `accessibleText`, marca
-`textSource: "transcrito"` y regenera la lectura fácil. Puede tardar hasta dos
-minutos.
+Sin body. Relee el PDF original, reemplaza `accessibleText`, marca `textSource: "transcrito"` y regenera la lectura fácil. Puede tardar hasta dos minutos.
 
-Errores previstos: `400` (el material no es PDF), `410` (no está el PDF original),
-`422` (falta la key o supera 20 páginas) y `503` (Claude no responde).
+Errores previstos: `400` (el material no es PDF), `410` (no está el PDF original), `422` (falta la key o supera 20 páginas) y `503` (Claude no responde).
 
 ### Modelos y asociaciones
 
-Todos los ids son UUID; el código de curso de cuatro dígitos es un campo `string`
-independiente. Las asociaciones previstas son `Course -> materials` y
-`Material -> translations`. Los archivos se guardan en `/uploads/materials/` y
-`/uploads/audios/`.
+Todos los ids son UUID; el código de curso de cuatro dígitos es un campo `string`independiente. Las asociaciones previstas son `Course -> materials` y `Material -> translations`. Los archivos se guardan en `/uploads/materials/` y `/uploads/audios/`.
 
 ---
 
 ## Glosario (Nata, opcional)
+
+&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
 
 > Pendiente si sobra tiempo: `GET/POST /api/glossary`.
 
@@ -268,8 +261,7 @@ independiente. Las asociaciones previstas son `Course -> materials` y
 
 ## Integración offline (Ana → Eric)
 
-La integración offline pertenece al cliente y consume la respuesta completa de
-`GET /api/materials/:id`.
+La integración offline pertenece al cliente y consume la respuesta completa de `GET /api/materials/:id`.
 
 - `configurarOffline({ apiUrl })` e `iniciarSincronizacion()` una vez en `main.jsx`.
 - El botón "Guardar para usar sin internet" llama a `guardarMaterial(material)`.
