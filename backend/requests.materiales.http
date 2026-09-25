@@ -12,16 +12,15 @@
 @token = {{login.response.body.$.data.accessToken}}
 @materialTexto = {{crearTexto.response.body.$.data.id}}
 @materialPdf = {{crearPdf.response.body.$.data.id}}
+@cursoId = {{crearCurso.response.body.$.data.curso.id}}
+@codigo = {{crearCurso.response.body.$.data.curso.code}}
+@materialCurso = {{crearEnCurso.response.body.$.data.id}}
 
 
 ### ─────────────────────────── 0. PREPARACIÓN ───────────────────────────
 
 ### 0.1 ¿Está vivo el servidor?
 GET {{baseUrl}}/health
-
-### 0.2 Registrar docente de prueba (una sola vez; si ya existe, da error y seguís)
-POST {{baseUrl}}/auth/register
-Content-Type: application/json
 
 ### 0.2 Registrar docente de prueba (una sola vez; si ya existe, da error y seguís)
 POST {{baseUrl}}/auth/register
@@ -106,27 +105,6 @@ Content-Type: application/pdf
 
 < ./pdf-pruebas/PRUEBA-IMAGEN.pdf
 ------Limite--
-
-### 1.4 Crear dentro de un curso (cuando esté el endpoint de Nata)
-### Reemplazá el courseId por el id de un curso del docente logueado.
-# POST {{baseUrl}}/materials
-# Authorization: Bearer {{token}}
-# Content-Type: multipart/form-data; boundary=----Limite
-#
-# ------Limite
-# Content-Disposition: form-data; name="title"
-#
-# Material del curso
-# ------Limite
-# Content-Disposition: form-data; name="courseId"
-#
-# 00000000-0000-0000-0000-000000000000
-# ------Limite
-# Content-Disposition: form-data; name="text"
-#
-# Texto de prueba del curso.
-# ------Limite--
-
 
 ### ─────────────────────────── 2. LEER (sin login, como el alumno) ───────────────────────────
 
@@ -236,3 +214,113 @@ Authorization: Bearer {{token}}
 
 ### 6.2 Confirmar que ya no existe → 404
 GET {{baseUrl}}/materials/{{materialTexto}}
+
+
+### ─────────────────────── 7. FLUJO COMPLETO DE LA DEMO (con Nata) ───────────────────────
+### Hacé antes el 0.3 Login.
+
+### 7.1 Crear curso → devuelve el código de 4 dígitos
+# @name crearCurso
+POST {{baseUrl}}/courses
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "3er año Biología",
+  "level": "secundaria",
+  "year": 3,
+  "subject": "Ciencias Naturales"
+}
+
+### 7.2 Mis cursos → tiene que aparecer el curso recién creado
+GET {{baseUrl}}/courses/mine
+Authorization: Bearer {{token}}
+
+### 7.3 Subir un material a ese curso
+# @name crearEnCurso
+POST {{baseUrl}}/materials
+Authorization: Bearer {{token}}
+Content-Type: multipart/form-data; boundary=----Limite
+
+------Limite
+Content-Disposition: form-data; name="title"
+
+La fotosíntesis
+------Limite
+Content-Disposition: form-data; name="courseId"
+
+{{cursoId}}
+------Limite
+Content-Disposition: form-data; name="text"
+
+La fotosíntesis es el proceso mediante el cual las plantas fabrican su alimento usando luz, agua y aire. Como resultado, liberan oxígeno.
+------Limite--
+
+### 7.4 Cargar la traducción al wichí SIN audio (marcada como simulada)
+POST {{baseUrl}}/materials/{{materialCurso}}/translations
+Authorization: Bearer {{token}}
+Content-Type: multipart/form-data; boundary=----Limite
+
+------Limite
+Content-Disposition: form-data; name="language"
+
+wichí
+------Limite
+Content-Disposition: form-data; name="text"
+
+Texto de prueba en wichí (simulado).
+------Limite
+Content-Disposition: form-data; name="author"
+
+Equipo hackatón
+------Limite
+Content-Disposition: form-data; name="simulated"
+
+true
+------Limite--
+
+### 7.5 Traducción CON audio
+### Poné un audio corto (.mp3 o .webm) en pdf-pruebas/ con el nombre audio-prueba.mp3
+POST {{baseUrl}}/materials/{{materialCurso}}/translations
+Authorization: Bearer {{token}}
+Content-Type: multipart/form-data; boundary=----Limite
+
+------Limite
+Content-Disposition: form-data; name="language"
+
+wichí
+------Limite
+Content-Disposition: form-data; name="simulated"
+
+true
+------Limite
+Content-Disposition: form-data; name="audio"; filename="audio-prueba.mp3"
+Content-Type: audio/mpeg
+
+< ./pdf-pruebas/audio-prueba.mp3
+------Limite--
+
+### 7.6 El alumno busca el curso por código (sin login)
+### Tiene que traer el material en data.curso.materials, SIN originalFilePath ni createdBy
+GET {{baseUrl}}/courses/code/{{codigo}}
+
+### 7.7 El alumno abre el material → tienen que venir las traducciones
+### Copiá el audioUrl de la respuesta y abrilo en Chrome: http://localhost:3000/uploads/audios/...
+GET {{baseUrl}}/materials/{{materialCurso}}
+
+### 7.8 Código inexistente → 404
+GET {{baseUrl}}/courses/code/0000
+
+### 7.9 Traducción sin lengua → 422
+POST {{baseUrl}}/materials/{{materialCurso}}/translations
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "text": "sin lengua" }
+
+### 7.10 Crear curso sin nivel → 422
+POST {{baseUrl}}/courses
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "name": "Curso sin nivel" }
