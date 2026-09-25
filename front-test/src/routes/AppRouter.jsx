@@ -1,5 +1,5 @@
 import { Navigate, Route, Routes } from "react-router-dom";
-import { ProtectedRoute } from "./ProtectedRoute";
+import { ProtectedRoute } from "./ProtectedRoute.js";
 
 // Importamos los Layouts
 import AuthLayout from "../layouts/AuthLayout";
