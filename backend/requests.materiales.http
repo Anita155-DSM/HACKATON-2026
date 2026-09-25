@@ -324,3 +324,8 @@ Authorization: Bearer {{token}}
 Content-Type: application/json
 
 { "name": "Curso sin nivel" }
+
+### 7.11 Asistente de glosario para el traductor
+### Palabras del material que están en el glosario wichí (con página) y las que no están
+GET {{baseUrl}}/materials/{{materialCurso}}/glosario
+Authorization: Bearer {{token}}

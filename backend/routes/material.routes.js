@@ -9,6 +9,7 @@ import {
   actualizarMaterial,
   regenerarLecturaFacil,
   transcribirMaterial,
+  sugerenciasGlosario,
   eliminarMaterial,
 } from '../controllers/material.controllers.js';
 import {
@@ -60,6 +61,7 @@ router.post('/', authenticate, limiteLLM, subirArchivo, validarCrearMaterial, cr
 router.patch('/:id', authenticate, validarActualizarMaterial, actualizarMaterial);
 router.post('/:id/lectura-facil', authenticate, limiteLLM, validarIdMaterial, regenerarLecturaFacil);
 router.post('/:id/transcribir', authenticate, limiteLLM, validarIdMaterial, transcribirMaterial);
+router.get('/:id/glosario', authenticate, limiteLLM, validarIdMaterial, sugerenciasGlosario);
 router.delete('/:id', authenticate, validarIdMaterial, eliminarMaterial);
 
 export default router;

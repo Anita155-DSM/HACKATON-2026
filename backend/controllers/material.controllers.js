@@ -12,6 +12,7 @@ import {
   transcribirConClaude,
 } from '../services/extraerTexto.service.js';
 import { generarLecturaFacil } from '../services/lecturaFacil.service.js';
+import { sugerirTerminos } from '../services/glosario.service.js';
 
 const UPLOAD_DIR = process.env.UPLOAD_DIR || 'uploads/materials';
 const CAMPO_DOCENTE_CURSO = 'teacherId';
@@ -217,6 +218,24 @@ export const transcribirMaterial = manejar(async (req, res) => {
   await material.save();
 
   return responder(res, 200, true, mensajeResultado('Material releído', lf.estado, 'transcrito'), vistaPublica(material));
+});
+
+// GET /api/materials/:id/glosario
+// Asistente para el traductor: palabras del material que están en el glosario wichí,
+// con su página en el libro, y las que no están (para que la comunidad las cree o elija).
+export const sugerenciasGlosario = manejar(async (req, res) => {
+  const material = await Material.findByPk(req.params.id);
+  if (!material) throw new ErrorHttp(404, 'Material no encontrado');
+
+  // La lectura fácil es el puente para traducir; si no hay, se usa el texto accesible.
+  const usaLecturaFacil = Boolean(material.easyReadText);
+  const resultado = await sugerirTerminos(usaLecturaFacil ? material.easyReadText : material.accessibleText);
+
+  return responder(res, 200, true, 'Sugerencias del glosario', {
+    materialId: material.id,
+    textoAnalizado: usaLecturaFacil ? 'lectura-facil' : 'accesible',
+    ...resultado,
+  });
 });
 
 // DELETE /api/materials/:id
