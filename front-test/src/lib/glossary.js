@@ -1,15 +1,49 @@
-// Glosario comunitario. El backend todavía no tiene GET/POST /api/glossary (API.md: "Pendiente si sobra tiempo"),
-// así que por ahora vive en este dispositivo: semilla + términos propuestos o revisados acá.
-// Cuando exista el endpoint, reemplazar getGlossary / saveTerm por llamadas a la API.
+// Glosario comunitario: semilla local + términos del servidor (GET /api/glossary) + los propuestos
+// o revisados en este dispositivo. El backend todavía no tiene POST /api/glossary, así que lo que se
+// guarda acá queda solo en el dispositivo.
 import { SEED_GLOSSARY } from '../data/glossary.js';
+import { glossary as glossaryApi } from './api.js';
 import { load, save } from './storage.js';
 
 const KEY = 'glosario';
+// Última copia del glosario del servidor, por lengua, para usarlo sin conexión
+const SERVER_KEY = 'glosario-servidor';
+
+const mismoTermino = (a, b) => a.trim().toLowerCase() === b.trim().toLowerCase();
+
+const desdeServidor = (t) => ({
+  id: `servidor-${t.id}`,
+  es: t.es,
+  wichi: t.term,
+  variante: t.note || '',
+  fuente: t.source || '',
+  estado: 'propuesto',
+  lengua: t.language,
+});
+
+// Trae el glosario del servidor y lo guarda. Sin servidor, sigue con la última copia guardada.
+export async function syncGlossary(lengua = 'wichi') {
+  try {
+    const terminos = await glossaryApi.list(lengua);
+    save(SERVER_KEY, { ...load(SERVER_KEY, {}), [lengua]: terminos });
+  } catch {
+    /* sin conexión o sin servidor */
+  }
+  return getGlossary(lengua);
+}
 
 export function getGlossary(lengua = 'wichi') {
   const local = load(KEY, {});
-  const merged = SEED_GLOSSARY.map((t) => ({ ...t, ...local[t.id] }));
-  const extra = Object.values(local).filter((t) => !t.id.startsWith('semilla-'));
+  const servidor = (load(SERVER_KEY, {})[lengua] || []).map(desdeServidor);
+  // El servidor completa los términos de la semilla (mismo término en castellano) y suma los que faltan
+  const base = SEED_GLOSSARY.map((t) => {
+    const s = servidor.find((x) => mismoTermino(x.es, t.es));
+    return s ? { ...t, ...s, id: t.id, tema: t.tema } : t;
+  });
+  servidor.filter((s) => !SEED_GLOSSARY.some((t) => mismoTermino(t.es, s.es))).forEach((s) => base.push(s));
+  const ids = new Set(base.map((t) => t.id));
+  const merged = base.map((t) => ({ ...t, ...local[t.id] }));
+  const extra = Object.values(local).filter((t) => !ids.has(t.id));
   return [...merged, ...extra].filter((t) => t.lengua === lengua).sort((a, b) => a.es.localeCompare(b.es));
 }
 

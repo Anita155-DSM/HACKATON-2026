@@ -1,11 +1,11 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { CheckCircle, DownloadSimple, MagnifyingGlass, PencilSimple, Plus } from '@phosphor-icons/react';
 import TermForm from '../../components/TermForm.jsx';
 import { Badge, Dialog, EmptyState, PageHeader } from '../../components/ui.jsx';
 import { useAnnouncer } from '../../context/AnnouncerContext.jsx';
 import { GLOSSARY_SOURCES } from '../../data/glossary.js';
 import { WICHI_LANG_TAG } from '../../lib/config.js';
-import { exportGlossary, getGlossary } from '../../lib/glossary.js';
+import { exportGlossary, getGlossary, syncGlossary } from '../../lib/glossary.js';
 import { useDocumentTitle } from '../../lib/hooks.js';
 
 const ESTADOS = {
@@ -20,6 +20,10 @@ export default function Glossary() {
   const [terms, setTerms] = useState(() => getGlossary('wichi'));
   const [q, setQ] = useState('');
   const [editing, setEditing] = useState(null);
+
+  useEffect(() => {
+    syncGlossary('wichi').then(setTerms);
+  }, []);
 
   const filtered = useMemo(() => {
     const n = q.trim().toLowerCase();

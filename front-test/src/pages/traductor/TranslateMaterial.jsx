@@ -1,14 +1,15 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, PaperPlaneTilt, Plus, SpeakerHigh, Stop } from '@phosphor-icons/react';
 import { AudioRecorder } from '../../components/inputs.jsx';
+import { RecordedAudio, TranslationStatus } from '../../components/materials.jsx';
 import TermForm from '../../components/TermForm.jsx';
 import { Badge, Dialog, ErrorBox, Field, Loading, Switch } from '../../components/ui.jsx';
 import { useAnnouncer } from '../../context/AnnouncerContext.jsx';
 import { useAuth } from '../../context/AuthContext.jsx';
-import { materials, translations } from '../../lib/api.js';
+import { audioSrc, materials, translations } from '../../lib/api.js';
 import { LANGUAGES, WICHI_LANG_TAG } from '../../lib/config.js';
-import { getGlossary, markTerms, termsInText } from '../../lib/glossary.js';
+import { getGlossary, markTerms, syncGlossary, termsInText } from '../../lib/glossary.js';
 import { useAsync, useDocumentTitle } from '../../lib/hooks.js';
 import { canSpeak, readText } from '../../lib/speech.js';
 import { CheckCircle, Flask } from '@phosphor-icons/react';
@@ -42,6 +43,9 @@ export default function TranslateMaterial() {
   useDocumentTitle(m ? `Traducir: ${m.title}` : 'Traducir');
 
   const [glossary, setGlossary] = useState(() => getGlossary('wichi'));
+  useEffect(() => {
+    syncGlossary('wichi').then(setGlossary);
+  }, []);
   const [editing, setEditing] = useState(null);
   const [reading, setReading] = useState(null);
   const [form, setForm] = useState({
@@ -57,6 +61,7 @@ export default function TranslateMaterial() {
 
   const source = m?.easyReadText || m?.accessibleText || '';
   const found = useMemo(() => termsInText(source, glossary), [source, glossary]);
+  const existentes = (m?.translations || []).filter((t) => t.language === form.language);
 
   const submit = async (e) => {
     e.preventDefault();
@@ -102,6 +107,29 @@ export default function TranslateMaterial() {
         <p className="font-bold text-ink-2">Traducir al wichí</p>
         <h1 className="text-[2rem] leading-tight font-bold md:text-[2.4rem]">{m.title}</h1>
       </header>
+
+      {existentes.length > 0 && (
+        <section aria-labelledby="existentes-t" className="box mb-8 grid gap-5 p-5 md:p-7">
+          <h2 id="existentes-t" className="text-[1.25rem] font-bold">
+            Traducciones que ya tiene
+          </h2>
+          {existentes.map((t) => (
+            <article key={t.id} className="grid gap-3 border-t border-line pt-4 first-of-type:border-t-0 first-of-type:pt-0">
+              <div className="flex flex-wrap gap-2">
+                <TranslationStatus tr={t} />
+              </div>
+              {t.text && (
+                <div lang={t.simulated ? 'es' : WICHI_LANG_TAG} className="reading text-[1.1rem] leading-[1.75] whitespace-pre-line">
+                  {t.text}
+                </div>
+              )}
+              <RecordedAudio label="Audio" src={audioSrc(t.audioUrl)} blob={t.audioBlob} />
+              {t.author && <p className="text-[0.9rem] text-ink-2">Traducción de {t.author}.</p>}
+            </article>
+          ))}
+          <p className="hint">Podés sumar otra traducción con el formulario de abajo.</p>
+        </section>
+      )}
 
       <div className="grid gap-8 lg:grid-cols-2 lg:gap-10">
         <section aria-labelledby="orig-t" className="grid content-start gap-6">

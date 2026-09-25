@@ -1,5 +1,6 @@
-import { createContext, useCallback, useContext, useMemo, useState } from 'react';
-import { auth, getSession, setSession } from '../lib/api.js';
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { auth, getSession, health, setSession } from '../lib/api.js';
+import { DEMO_FORCED } from '../lib/config.js';
 
 // Sesión del docente o traductor. El alumno no se registra: entra con el código del curso.
 const AuthContext = createContext(null);
@@ -11,6 +12,13 @@ export function AuthProvider({ children }) {
     setSession(s);
     setSessionState(s);
   }, []);
+
+  // Una sesión de demostración (se inició con el servidor apagado) no sirve contra el servidor real:
+  // si el servidor ya responde, se descarta para que se vuelva a ingresar con una cuenta de verdad.
+  useEffect(() => {
+    if (!session?.demo || DEMO_FORCED) return;
+    health().then((ok) => ok && persist(null));
+  }, [session?.demo, persist]);
 
   const login = useCallback(
     async (email, password) => {

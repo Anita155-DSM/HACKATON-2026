@@ -129,7 +129,9 @@ async function conDemo(real, local, { tambienSi = () => false } = {}) {
     if (!debeUsarDemo(err) && !tambienSi(err)) throw err;
     try {
       const r = await adaptDemo(local);
-      setMode('demo');
+      // El aviso "el servidor no respondió" va solo si de verdad no respondió o falló.
+      // Si respondió 404 y el dato estaba en el dispositivo (un curso o material de ejemplo), el servidor anda bien.
+      if (debeUsarDemo(err) || err.status >= 500) setMode('demo');
       return r;
     } catch (localErr) {
       // Si tampoco está en local, el error que importa es el original (por ejemplo, "sin conexión")
@@ -258,7 +260,9 @@ export const materials = {
       async () => envelope([]),
     ).catch(() => envelope([]));
     const reales = (r.data || []).filter((m) => !esEjemplo(m.id));
-    return [...reales, ...ejemplos];
+    // Si el servidor ya tiene un material con el mismo título (por ejemplo, el del seed), se muestra ese y no el de ejemplo
+    const titulos = new Set(reales.map((m) => m.title.trim().toLowerCase()));
+    return [...reales, ...ejemplos.filter((m) => !titulos.has(m.title.trim().toLowerCase()))];
   },
   // Si el servidor no lo tiene, puede ser un material creado en modo demostración
   get: (id) => {
@@ -323,6 +327,14 @@ export const translations = {
     if (audio) fd.append('audio', audio, `traduccion.${extensionAudio(audio.type)}`);
     return conDemo(() => request(`/materials/${materialId}/translations`, { method: 'POST', form: fd, auth: true }), local);
   },
+};
+
+/* ---------- Glosario ---------- */
+
+export const glossary = {
+  // GET /glossary?language=wichi → data.terminos: [{ id, es, term, language, source, note }]
+  list: (language) =>
+    request(`/glossary?language=${encodeURIComponent(language)}`).then((r) => r.data?.terminos || []),
 };
 
 function extensionAudio(type = '') {

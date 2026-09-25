@@ -148,6 +148,8 @@ export const listarPublicos = manejar(async (req, res) => {
       'id', 'title', 'level', 'grade', 'subject', 'license', 'source', 'author',
       'sourceType', 'easyReadStatus', 'updatedAt',
     ],
+    // Solo para saber qué lenguas tiene cada material (el texto viene con GET /api/materials/:id)
+    include: [{ association: 'translations', attributes: ['id', 'language', 'validated', 'simulated'] }],
     order: [['title', 'ASC']],
     limit: 50,
   });

@@ -18,7 +18,7 @@ import userRoutes from './routes/user.routes.js';
 import courseRoutes from './routes/course.routes.js'; // Nata
 import materialRoutes from './routes/material.routes.js'; // Ana
 import translationRoutes from './routes/translation.routes.js'; // Nata
-// import glossaryRoutes from './routes/glossary.routes.js'; // Nata · cuando exista
+import glossaryRoutes from './routes/glossary.routes.js'; // Nata
 import { apiLimiter } from './middlewares/rateLimiters.js';
 
 dotenv.config();
@@ -61,7 +61,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/courses', courseRoutes);
 app.use('/api/materials', materialRoutes);
 app.use('/api/materials', translationRoutes); // POST /api/materials/:id/translations
-// app.use('/api/glossary', glossaryRoutes); // cuando exista
+app.use('/api/glossary', glossaryRoutes);
 
 // Ruta no encontrada
 app.use((req, res) => {

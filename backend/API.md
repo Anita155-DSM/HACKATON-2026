@@ -88,4 +88,10 @@ Guarda una traducción de un material y su archivo de audio.
 
 ## Glosario (Nata, opcional)
 
-> Pendiente si sobra tiempo: `GET/POST /api/glossary`.
+`GET /api/glossary?language=wichi` (público). `language` es opcional; sin él devuelve todas las lenguas.
+
+```json
+{ "exito": true, "mensaje": "OK", "data": { "terminos": [{ "id": "…", "es": "agua", "term": "waj", "language": "wichi", "source": "Glosario wichí lhämtes (INAI, 2017)", "note": null }] } }
+```
+
+> Pendiente si sobra tiempo: `POST /api/glossary`.

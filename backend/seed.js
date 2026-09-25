@@ -83,9 +83,12 @@ async function seed() {
       level: "secundaria",
       grade: 1,
       subject: "Ciencias Naturales",
-      visibility: "curso",
+      // Público para que aparezca en la Biblioteca y en "Quiero traducir" (el front lista solo los públicos)
+      visibility: "publico",
     },
   });
+  // Si el seed ya había corrido con visibility "curso", lo corrige
+  if (material.visibility !== "publico") await material.update({ visibility: "publico" });
 
   // 4) Traducción al wichí (SIMULADA para la demo) ----------------------
   // Sin traducción real validada por la comunidad, va marcada como simulada.

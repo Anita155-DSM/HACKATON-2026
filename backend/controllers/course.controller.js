@@ -1,4 +1,4 @@
-import { Course, Material } from "../models/index.js";
+import { Course, Material, Translation } from "../models/index.js";
 
 async function generarCodigoUnico() {
   let code;
@@ -68,6 +68,10 @@ export const cursoPorCodigo = async (req, res) => {
           // Ruta del archivo en el servidor y quién lo subió no se exponen.
           // Los textos completos se piden con GET /api/materials/:id.
           attributes: { exclude: ["originalFilePath", "createdBy", "accessibleText", "easyReadText"] },
+          // Solo para saber qué lenguas tiene cada material (el texto viene con GET /api/materials/:id)
+          include: [
+            { model: Translation, as: "translations", attributes: ["id", "language", "validated", "simulated"] },
+          ],
         },
       ],
     });
