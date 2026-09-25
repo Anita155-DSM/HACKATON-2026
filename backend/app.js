@@ -15,6 +15,10 @@ import { User } from './models/user.models.js';
 // IMPORTAMOS RUTAS
 import authRoutes from './routes/auth.routes.js';
 import userRoutes from './routes/user.routes.js';
+import courseRoutes from './routes/course.routes.js'; // Nata
+import materialRoutes from './routes/material.routes.js'; // Ana
+import translationRoutes from './routes/translation.routes.js'; // Nata
+// import glossaryRoutes from './routes/glossary.routes.js'; // Nata · cuando exista
 import { apiLimiter } from './middlewares/rateLimiters.js';
 
 dotenv.config();
@@ -29,7 +33,9 @@ app.set('trust proxy', 1); // necesario detrás de Render/Railway/etc. para el r
 // CORS: define quién puede consumir la API (lista blanca)
 const dominiosPermitidos = (process.env.CORS_ORIGINS || '*').split(',').map((o) => o.trim());
 
-app.use(helmet());
+// crossOriginResourcePolicy: sin esto el navegador bloquea los audios y PDFs de /uploads
+// cuando el front corre en otro origen (localhost:5173 o el dominio del deploy).
+app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
 app.use(
   cors({
     origin: dominiosPermitidos.includes('*') ? true : dominiosPermitidos,
@@ -45,10 +51,17 @@ app.get('/api/health', (req, res) => {
   res.json({ exito: true, mensaje: `${appName} funcionando`, data: { env: nodeEnv, uptime: process.uptime() } });
 });
 
+// Archivos subidos (audios de traducciones, PDFs originales)
+app.use('/uploads', express.static('uploads', { maxAge: '7d' }));
+
 // REGISTRO DE RUTAS API
 app.use('/api', apiLimiter);
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/courses', courseRoutes);
+app.use('/api/materials', materialRoutes);
+app.use('/api/materials', translationRoutes); // POST /api/materials/:id/translations
+// app.use('/api/glossary', glossaryRoutes); // cuando exista
 
 // Ruta no encontrada
 app.use((req, res) => {
