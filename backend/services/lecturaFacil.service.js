@@ -1,10 +1,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { hayKey, modeloClaude, pedirAClaude } from './claude.client.js';
 
-const API_URL = 'https://api.anthropic.com/v1/messages';
-const modelo = () => process.env.LLM_MODEL || 'claude-haiku-4-5-20251001';
 const MAX_ENTRADA = 15000; // caracteres; para la demo alcanza
-const timeoutMs = () => Number(process.env.LLM_TIMEOUT_MS || 90000);
 const RUTA_RESPALDO = path.resolve('data/lectura-facil-respaldo.json');
 
 const INSTRUCCIONES = `Sos especialista en lectura fácil en español de Argentina.
@@ -45,54 +43,17 @@ function buscarRespaldo(titulo) {
   return respaldoCache[slug(titulo)] || null;
 }
 
-async function llamarLLM(texto) {
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), timeoutMs());
-  try {
-    const res = await fetch(API_URL, {
-      method: 'POST',
-      signal: controller.signal,
-      headers: {
-        'content-type': 'application/json',
-        'x-api-key': process.env.LLM_API_KEY,
-        'anthropic-version': '2023-06-01',
-      },
-      body: JSON.stringify({
-        model: modelo(),
-        max_tokens: 8000,
-        temperature: 0.3,
-        system: INSTRUCCIONES,
-        messages: [{ role: 'user', content: texto.slice(0, MAX_ENTRADA) }],
-      }),
-    });
-    if (!res.ok) throw new Error(`LLM respondió ${res.status}: ${await res.text()}`);
-    const data = await res.json();
-    // Si se cortó por largo, no guardamos un texto incompleto: se trata como falla.
-    if (data.stop_reason === 'max_tokens') {
-      throw new Error('La lectura fácil se cortó por largo (max_tokens)');
-    }
-    const salida = (data.content || [])
-      .filter((b) => b.type === 'text')
-      .map((b) => b.text)
-      .join('\n')
-      .trim();
-    return salida || null;
-  } finally {
-    clearTimeout(timer);
-  }
-}
-
 /**
- * Nunca lanza: si el LLM falla, devuelve el respaldo precargado o 'pendiente'.
+ * Nunca lanza: si Claude falla, devuelve el respaldo precargado o 'pendiente'.
  * @returns {{ texto: string|null, estado: 'generado'|'respaldo'|'pendiente', modelo: string|null }}
  */
 export async function generarLecturaFacil(texto, { titulo = '' } = {}) {
-  if (process.env.LLM_API_KEY) {
+  if (hayKey()) {
     try {
-      const salida = await llamarLLM(texto);
-      if (salida) return { texto: salida, estado: 'generado', modelo: modelo() };
+      const salida = await pedirAClaude({ system: INSTRUCCIONES, content: texto.slice(0, MAX_ENTRADA) });
+      return { texto: salida, estado: 'generado', modelo: modeloClaude() };
     } catch (err) {
-      console.warn('[lectura fácil] falló el LLM, uso respaldo:', err.message);
+      console.warn('[lectura fácil] falló Claude, uso respaldo:', err.message);
     }
   }
   const respaldo = buscarRespaldo(titulo);

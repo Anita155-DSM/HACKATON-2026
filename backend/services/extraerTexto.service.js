@@ -1,6 +1,8 @@
 // pdf-parse v1: se importa desde lib/ para evitar el bug del modo debug
 // (el index.js intenta leer un PDF de prueba cuando se usa con ES Modules).
 import pdfParse from 'pdf-parse/lib/pdf-parse.js';
+import { hayKey } from './claude.client.js';
+import { MAX_PAGINAS_TRANSCRIPCION, transcribirPdf } from './transcribir.service.js';
 
 export class ErrorHttp extends Error {
   constructor(status, message) {
@@ -24,29 +26,66 @@ export function limpiarTexto(texto = '') {
     .trim();
 }
 
-export async function extraerTextoDePdf(buffer) {
-  let resultado;
+async function leerPdf(buffer) {
   try {
-    resultado = await pdfParse(buffer);
+    return await pdfParse(buffer);
   } catch {
     throw new ErrorHttp(422, 'No pudimos leer el PDF. Probá con otro archivo o pegá el texto.');
   }
+}
 
+/**
+ * Transcribe el PDF con Claude (lee también el texto de las imágenes).
+ * @returns {Promise<string>}
+ */
+export async function transcribirConClaude(buffer, paginas) {
+  if (!hayKey()) {
+    throw new ErrorHttp(422, 'Este PDF tiene el texto dentro de imágenes y no se puede leer automáticamente. Pegá el texto del material.');
+  }
+  if (paginas > MAX_PAGINAS_TRANSCRIPCION) {
+    throw new ErrorHttp(
+      422,
+      `Para leer las imágenes, el PDF puede tener hasta ${MAX_PAGINAS_TRANSCRIPCION} páginas. Dividilo en partes o pegá el texto.`,
+    );
+  }
+  try {
+    return limpiarTexto(await transcribirPdf(buffer));
+  } catch (err) {
+    console.warn('[transcripción] falló Claude:', err.message);
+    throw new ErrorHttp(
+      503,
+      'No pudimos leer el texto de las imágenes en este momento. Probá de nuevo en un rato o pegá el texto.',
+    );
+  }
+}
+
+export async function contarPaginas(buffer) {
+  const { numpages } = await leerPdf(buffer);
+  return Math.max(numpages || 1, 1);
+}
+
+/**
+ * @returns {Promise<{ texto: string, origen: 'extraido' | 'transcrito' }>}
+ */
+export async function extraerTextoDePdf(buffer) {
+  const resultado = await leerPdf(buffer);
   const texto = limpiarTexto(resultado.text);
   const paginas = Math.max(resultado.numpages || 1, 1);
 
-  // Sin OCR: si casi no hay texto, es un PDF escaneado (imágenes).
+  // Casi sin texto: es un PDF escaneado (imágenes). Se lo pasamos a Claude.
   if (texto.length < MIN_CARACTERES_POR_PAGINA * paginas) {
-    throw new ErrorHttp(
-      422,
-      'Este PDF parece escaneado (es una imagen) y no tiene texto para leer. Pegá el texto del material.',
-    );
+    return { texto: await transcribirConClaude(buffer, paginas), origen: 'transcrito' };
   }
-  return texto;
+  return { texto, origen: 'extraido' };
 }
 
-export function extraerTextoDeArchivo(file) {
+/**
+ * @returns {Promise<{ texto: string, origen: 'extraido' | 'transcrito' | 'pegado' }>}
+ */
+export async function extraerTextoDeArchivo(file) {
   if (file.mimetype === 'application/pdf') return extraerTextoDePdf(file.buffer);
-  if (file.mimetype === 'text/plain') return Promise.resolve(limpiarTexto(file.buffer.toString('utf8')));
+  if (file.mimetype === 'text/plain') {
+    return { texto: limpiarTexto(file.buffer.toString('utf8')), origen: 'pegado' };
+  }
   throw new ErrorHttp(415, 'Solo se aceptan archivos PDF o de texto.');
 }

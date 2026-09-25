@@ -4,11 +4,17 @@ import crypto from 'node:crypto';
 import { Op } from 'sequelize';
 import { Material } from '../models/material.models.js';
 import { Course } from '../models/course.models.js'; // de Nata, solo lectura
-import { ErrorHttp, extraerTextoDeArchivo, limpiarTexto } from '../services/extraerTexto.service.js';
+import {
+  ErrorHttp,
+  contarPaginas,
+  extraerTextoDeArchivo,
+  limpiarTexto,
+  transcribirConClaude,
+} from '../services/extraerTexto.service.js';
 import { generarLecturaFacil } from '../services/lecturaFacil.service.js';
 
 const UPLOAD_DIR = process.env.UPLOAD_DIR || 'uploads/materials';
-const CAMPO_DOCENTE_CURSO = 'teacherId'; //confirmado por nata
+const CAMPO_DOCENTE_CURSO = 'teacherId';
 const CAMPOS_EDITABLES = ['title', 'level', 'grade', 'subject', 'license', 'source', 'author', 'visibility'];
 const ATRIBUTOS_PRIVADOS = ['originalFilePath', 'createdBy'];
 
@@ -53,10 +59,14 @@ function vistaPublica(material) {
 }
 
 const MENSAJE_LECTURA_FACIL = {
-  generado: 'Material creado con versión en lectura fácil',
-  respaldo: 'Material creado. Lectura fácil cargada desde el texto de respaldo',
-  pendiente: 'Material creado. La lectura fácil quedó pendiente; podés reintentar o escribirla',
+  generado: 'con versión en lectura fácil',
+  respaldo: 'con la lectura fácil del texto de respaldo',
+  pendiente: 'pero la lectura fácil quedó pendiente; podés reintentar o escribirla',
 };
+const AVISO_TRANSCRITO = ' El texto se leyó de imágenes: revisalo antes de compartirlo.';
+
+const mensajeResultado = (accion, estadoLF, origen) =>
+  `${accion} ${MENSAJE_LECTURA_FACIL[estadoLF]}.${origen === 'transcrito' ? AVISO_TRANSCRITO : ''}`;
 
 // POST /api/materials  (multipart: archivo | text)
 export const crearMaterial = manejar(async (req, res) => {
@@ -64,12 +74,13 @@ export const crearMaterial = manejar(async (req, res) => {
   await verificarCurso(courseId, req.user);
 
   let accessibleText;
+  let textSource = 'pegado';
   let sourceType = 'texto';
   let originalFileName = null;
   let originalFilePath = null;
 
   if (req.file) {
-    accessibleText = await extraerTextoDeArchivo(req.file);
+    ({ texto: accessibleText, origen: textSource } = await extraerTextoDeArchivo(req.file));
     if (req.file.mimetype === 'application/pdf') {
       sourceType = 'pdf';
       originalFileName = req.file.originalname;
@@ -95,6 +106,7 @@ export const crearMaterial = manejar(async (req, res) => {
     courseId: courseId || null,
     createdBy: String(req.user.id),
     sourceType,
+    textSource,
     originalFileName,
     originalFilePath,
     accessibleText,
@@ -103,7 +115,7 @@ export const crearMaterial = manejar(async (req, res) => {
     easyReadModel: lf.modelo,
   });
 
-  return responder(res, 201, true, MENSAJE_LECTURA_FACIL[lf.estado], vistaPublica(material));
+  return responder(res, 201, true, mensajeResultado('Material creado', lf.estado, textSource), vistaPublica(material));
 });
 
 // GET /api/materials/:id  (público: el alumno no tiene cuenta)
@@ -148,6 +160,10 @@ export const actualizarMaterial = manejar(async (req, res) => {
   CAMPOS_EDITABLES.forEach((k) => {
     if (req.body[k] !== undefined) material[k] = req.body[k];
   });
+  if (req.body.accessibleText !== undefined) {
+    // El docente revisó o corrigió el texto (por ejemplo, una transcripción).
+    material.accessibleText = limpiarTexto(req.body.accessibleText);
+  }
   if (req.body.easyReadText !== undefined) {
     material.easyReadText = req.body.easyReadText;
     material.easyReadStatus = 'manual';
@@ -167,6 +183,40 @@ export const regenerarLecturaFacil = manejar(async (req, res) => {
   Object.assign(material, { easyReadText: lf.texto, easyReadStatus: lf.estado, easyReadModel: lf.modelo });
   await material.save();
   return responder(res, 200, true, 'Lectura fácil actualizada', vistaPublica(material));
+});
+
+// POST /api/materials/:id/transcribir
+// Relee el PDF original con Claude, incluido el texto de imágenes y esquemas,
+// y regenera la lectura fácil a partir del texto nuevo.
+export const transcribirMaterial = manejar(async (req, res) => {
+  const material = await buscarPropio(req);
+  if (material.sourceType !== 'pdf' || !material.originalFilePath) {
+    throw new ErrorHttp(400, 'Este material no tiene un PDF original para leer');
+  }
+
+  let buffer;
+  try {
+    buffer = await fs.readFile(material.originalFilePath);
+  } catch {
+    throw new ErrorHttp(410, 'No encontramos el PDF original. Volvé a subir el material.');
+  }
+
+  const texto = await transcribirConClaude(buffer, await contarPaginas(buffer));
+  const lf = await generarLecturaFacil(texto, { titulo: material.title });
+
+  Object.assign(material, {
+    accessibleText: texto,
+    textSource: 'transcrito',
+    // Si la lectura fácil nueva falló, se conserva la anterior en vez de borrarla.
+    ...(lf.estado !== 'pendiente' && {
+      easyReadText: lf.texto,
+      easyReadStatus: lf.estado,
+      easyReadModel: lf.modelo,
+    }),
+  });
+  await material.save();
+
+  return responder(res, 200, true, mensajeResultado('Material releído', lf.estado, 'transcrito'), vistaPublica(material));
 });
 
 // DELETE /api/materials/:id

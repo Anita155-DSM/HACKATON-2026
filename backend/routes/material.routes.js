@@ -8,6 +8,7 @@ import {
   listarPublicos,
   actualizarMaterial,
   regenerarLecturaFacil,
+  transcribirMaterial,
   eliminarMaterial,
 } from '../controllers/material.controllers.js';
 import {
@@ -58,6 +59,7 @@ router.get('/:id', validarIdMaterial, obtenerMaterial);
 router.post('/', authenticate, limiteLLM, subirArchivo, validarCrearMaterial, crearMaterial);
 router.patch('/:id', authenticate, validarActualizarMaterial, actualizarMaterial);
 router.post('/:id/lectura-facil', authenticate, limiteLLM, validarIdMaterial, regenerarLecturaFacil);
+router.post('/:id/transcribir', authenticate, limiteLLM, validarIdMaterial, transcribirMaterial);
 router.delete('/:id', authenticate, validarIdMaterial, eliminarMaterial);
 
 export default router;

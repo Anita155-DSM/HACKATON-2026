@@ -36,6 +36,13 @@ export const validarIdMaterial = [idValido, validarResultado];
 export const validarActualizarMaterial = [
   idValido,
   body('title').optional().trim().notEmpty().isLength({ max: 200 }),
+  body('accessibleText')
+    .optional()
+    .isString()
+    .trim()
+    .notEmpty()
+    .withMessage('El texto no puede quedar vacío')
+    .isLength({ max: 100000 }),
   body('easyReadText').optional().isString().isLength({ max: 50000 }),
   ...camposOpcionales,
   validarResultado,

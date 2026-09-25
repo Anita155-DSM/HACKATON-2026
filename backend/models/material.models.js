@@ -41,6 +41,13 @@ export const Material = sequelize.define(
       type: DataTypes.TEXT,
       allowNull: false,
     },
+    // extraido = texto real del PDF · pegado = texto que escribió el docente
+    // transcrito = Claude lo leyó de imágenes (conviene que el docente lo revise)
+    textSource: {
+      type: DataTypes.ENUM('extraido', 'pegado', 'transcrito'),
+      allowNull: false,
+      defaultValue: 'extraido',
+    },
     easyReadText: {
       type: DataTypes.TEXT,
       allowNull: true,
