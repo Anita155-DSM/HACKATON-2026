@@ -1,6 +1,6 @@
 // Nombre provisorio: el documento base todavía tiene pendiente "Definir el nombre del proyecto".
 // Cambiarlo acá lo cambia en toda la app (también revisar index.html y manifest.webmanifest).
-export const APP_NAME = 'Puente';
+export const APP_NAME = 'FormA';
 
 export const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:3000/api').replace(/\/$/, '');
 

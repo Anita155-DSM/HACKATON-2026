@@ -1,4 +1,4 @@
-/* Service worker de Puente: offline-first.
+/* Service worker de FormA: offline-first.
  * - App (HTML, JS, CSS, fuentes, íconos): se guarda toda al instalar, usando precache-manifest.json.
  * - Navegación: intenta la red y, sin señal, responde con el index.html guardado.
  * - Archivos del build: primero la caché (tienen hash en el nombre, no cambian).

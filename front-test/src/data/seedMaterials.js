@@ -7,7 +7,7 @@
 const EQUIPO = {
   license: 'CC BY-SA 4.0',
   source: 'Texto de ejemplo escrito por el equipo para la demo',
-  author: 'Equipo Puente',
+  author: 'Equipo FormA',
 };
 
 const base = (n) => `00000000-0000-4000-8000-${String(n).padStart(12, '0')}`;
