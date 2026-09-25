@@ -6,6 +6,7 @@ import {
   FaSun, FaMoon, FaBell, FaShieldAlt,
   FaAdjust, FaVolumeUp, FaVolumeMute, FaBookReader, FaEnvelope, FaTextHeight
 } from "react-icons/fa";
+import Header from "../public/components/Header.jsx";
 
 export default function Settings() {
   const {
@@ -16,12 +17,13 @@ export default function Settings() {
     readingMode, toggleReading,
     readingVolume, setReadingVolume,
     notifications, setNotifications,
-    uiSize, setUiSize, // <-- AQUÍ agregamos la destructuración que faltaba
+    uiSize, setUiSize,
     speak
   } = useSettings();
 
-  return (
-    <div className="space-y-6 animate-fade-in">
+  return (<>
+    <Header />
+    <div className="space-y-6 animate-fade-in mt-16 px-4 sm:px-6 lg:px-8 py-8 max-w-5xl mx-auto">
       <div>
         <h1 className="text-2xl font-bold text-gray-800 dark:text-white transition-colors">Ajustes de Accesibilidad y Sistema</h1>
         <p className="text-gray-500 dark:text-gray-400 text-sm transition-colors">Configura la plataforma para adaptarla a tus necesidades.</p>
@@ -244,5 +246,5 @@ export default function Settings() {
 
       </div>
     </div>
-  );
+  </>);
 }
