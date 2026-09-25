@@ -1,0 +1,238 @@
+### ======================================================================
+### Pruebas de materiales (Ana) — extensión REST Client de VS Code
+### Cómo usar: hacé clic en "Send Request" arriba de cada pedido, en orden.
+### Los pedidos con "# @name" guardan su respuesta para usarla después.
+### ======================================================================
+
+@baseUrl = http://localhost:3000/api
+@email = docente.prueba@demo.com
+@password = Docente1234!
+
+# Se completan solos a partir de las respuestas (login y creación)
+@token = {{login.response.body.$.data.accessToken}}
+@materialTexto = {{crearTexto.response.body.$.data.id}}
+@materialPdf = {{crearPdf.response.body.$.data.id}}
+
+
+### ─────────────────────────── 0. PREPARACIÓN ───────────────────────────
+
+### 0.1 ¿Está vivo el servidor?
+GET {{baseUrl}}/health
+
+### 0.2 Registrar docente de prueba (una sola vez; si ya existe, da error y seguís)
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+### 0.2 Registrar docente de prueba (una sola vez; si ya existe, da error y seguís)
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "firstName": "Docente",
+  "lastName": "Prueba",
+  "email": "{{email}}",
+  "password": "{{password}}",
+  "confirmPassword": "{{password}}"
+}
+
+### 0.3 Login → guarda el token para los pedidos siguientes
+# @name login
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{email}}",
+  "password": "{{password}}"
+}
+
+
+### ─────────────────────────── 1. CREAR MATERIALES ───────────────────────────
+### Tardan: hasta 1 minuto (2 si el PDF es escaneado).
+
+### 1.1 Crear con texto pegado
+# @name crearTexto
+POST {{baseUrl}}/materials
+Authorization: Bearer {{token}}
+Content-Type: multipart/form-data; boundary=----Limite
+
+------Limite
+Content-Disposition: form-data; name="title"
+
+La fotosíntesis
+------Limite
+Content-Disposition: form-data; name="text"
+
+La fotosíntesis es el proceso mediante el cual los organismos autótrofos, como las plantas, sintetizan compuestos orgánicos a partir de dióxido de carbono y agua, utilizando la energía lumínica captada por la clorofila. Como resultado, liberan oxígeno.
+------Limite
+Content-Disposition: form-data; name="level"
+
+secundaria
+------Limite
+Content-Disposition: form-data; name="subject"
+
+Ciencias Naturales
+------Limite--
+
+### 1.2 Crear con PDF de texto
+# @name crearPdf
+POST {{baseUrl}}/materials
+Authorization: Bearer {{token}}
+Content-Type: multipart/form-data; boundary=----Limite
+
+------Limite
+Content-Disposition: form-data; name="title"
+
+Las etnias de Formosa
+------Limite
+Content-Disposition: form-data; name="archivo"; filename="PRUEBA-TEXTO.pdf"
+Content-Type: application/pdf
+
+< ./pdf-pruebas/PRUEBA-TEXTO.pdf
+------Limite--
+
+### 1.3 Crear con PDF escaneado → se transcribe con Claude (textSource: "transcrito")
+# @name crearEscaneado
+POST {{baseUrl}}/materials
+Authorization: Bearer {{token}}
+Content-Type: multipart/form-data; boundary=----Limite
+
+------Limite
+Content-Disposition: form-data; name="title"
+
+Texto narrativo
+------Limite
+Content-Disposition: form-data; name="archivo"; filename="PRUEBA-IMAGEN.pdf"
+Content-Type: application/pdf
+
+< ./pdf-pruebas/PRUEBA-IMAGEN.pdf
+------Limite--
+
+### 1.4 Crear dentro de un curso (cuando esté el endpoint de Nata)
+### Reemplazá el courseId por el id de un curso del docente logueado.
+# POST {{baseUrl}}/materials
+# Authorization: Bearer {{token}}
+# Content-Type: multipart/form-data; boundary=----Limite
+#
+# ------Limite
+# Content-Disposition: form-data; name="title"
+#
+# Material del curso
+# ------Limite
+# Content-Disposition: form-data; name="courseId"
+#
+# 00000000-0000-0000-0000-000000000000
+# ------Limite
+# Content-Disposition: form-data; name="text"
+#
+# Texto de prueba del curso.
+# ------Limite--
+
+
+### ─────────────────────────── 2. LEER (sin login, como el alumno) ───────────────────────────
+
+### 2.1 Obtener un material con sus traducciones
+GET {{baseUrl}}/materials/{{materialTexto}}
+
+### 2.2 Obtener el material del PDF
+GET {{baseUrl}}/materials/{{materialPdf}}
+
+### 2.3 Biblioteca pública (vacía hasta que un material sea "publico", ver 3.1)
+GET {{baseUrl}}/materials?level=secundaria
+
+### 2.4 Biblioteca: búsqueda por tema
+GET {{baseUrl}}/materials?q=fotosíntesis
+
+
+### ─────────────────────────── 3. EDITAR (docente dueño) ───────────────────────────
+
+### 3.1 Hacerlo público y completar datos de biblioteca
+PATCH {{baseUrl}}/materials/{{materialTexto}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "visibility": "publico",
+  "grade": 3,
+  "license": "CC BY-SA 4.0",
+  "source": "Material de prueba del equipo",
+  "author": "Equipo hackatón"
+}
+
+### 3.2 Corregir la lectura fácil a mano → easyReadStatus: "manual"
+PATCH {{baseUrl}}/materials/{{materialTexto}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "easyReadText": "La fotosíntesis\n\nLas plantas fabrican su propio alimento.\nPara eso usan luz, agua y aire."
+}
+
+### 3.3 Corregir el texto accesible (por ejemplo, una transcripción)
+PATCH {{baseUrl}}/materials/{{materialPdf}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "accessibleText": "Texto corregido por el docente."
+}
+
+
+### ─────────────────────────── 4. VOLVER A GENERAR CON CLAUDE ───────────────────────────
+
+### 4.1 Regenerar la lectura fácil
+POST {{baseUrl}}/materials/{{materialTexto}}/lectura-facil
+Authorization: Bearer {{token}}
+
+### 4.2 Leer también las imágenes del PDF (botón "Leer también las imágenes")
+POST {{baseUrl}}/materials/{{materialPdf}}/transcribir
+Authorization: Bearer {{token}}
+
+
+### ─────────────────────────── 5. ERRORES ESPERADOS ───────────────────────────
+
+### 5.1 Sin token → 401
+POST {{baseUrl}}/materials
+Content-Type: application/json
+
+{ "title": "Sin login", "text": "hola" }
+
+### 5.2 Sin título → 422 con "errores" por campo
+POST {{baseUrl}}/materials
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "text": "Texto sin título" }
+
+### 5.3 Sin archivo ni texto → 422
+POST {{baseUrl}}/materials
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "title": "Vacío" }
+
+### 5.4 Id con formato inválido → 422
+GET {{baseUrl}}/materials/123
+
+### 5.5 Material inexistente → 404
+GET {{baseUrl}}/materials/00000000-0000-0000-0000-000000000000
+
+### 5.6 Transcribir un material que no es PDF → 400
+POST {{baseUrl}}/materials/{{materialTexto}}/transcribir
+Authorization: Bearer {{token}}
+
+### 5.7 Nivel inválido → 422
+PATCH {{baseUrl}}/materials/{{materialTexto}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "level": "universidad" }
+
+
+### ─────────────────────────── 6. BORRAR (al final) ───────────────────────────
+
+### 6.1 Borrar el material de texto
+DELETE {{baseUrl}}/materials/{{materialTexto}}
+Authorization: Bearer {{token}}
+
+### 6.2 Confirmar que ya no existe → 404
+GET {{baseUrl}}/materials/{{materialTexto}}
