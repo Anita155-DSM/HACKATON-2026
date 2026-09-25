@@ -32,5 +32,7 @@ export const User = sequelize.define(
   {
     tableName: 'users',
     timestamps: true,
-  }
+  },
+  User.hasMany(Course, { foreignKey: "teacherId" }),
+  Course.belongsTo(User, { foreignKey: "teacherId" })
 );
