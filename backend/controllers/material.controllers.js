@@ -3,7 +3,7 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import { Op } from 'sequelize';
 import { Material } from '../models/material.models.js';
-import { Course } from '../models/course.models.js'; // de Nata, solo lectura
+import Course from '../models/course.models.js'; // de Nata (export default), solo lectura
 import {
   ErrorHttp,
   contarPaginas,
