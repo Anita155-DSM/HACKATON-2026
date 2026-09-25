@@ -85,3 +85,14 @@ MODO ALTO CONTRASTE (ACCESIBILIDAD AVANZADA)
     background-color: #FFF !important;
     color: #000 !important;
 }
+/* El menú de la landing queda fijo arriba: dejamos lugar para que los títulos no queden tapados al saltar a una sección */
+html {
+    scroll-padding-top: 5rem;
+    scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+}

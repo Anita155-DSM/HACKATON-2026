@@ -1,82 +1,85 @@
 import { Link } from "react-router-dom";
 import { useSettings } from "../../../hooks/useSettings.js";
-import { FaVolumeUp, FaSlidersH } from "react-icons/fa";
+import { LuVolume2, LuSlidersHorizontal, LuMoon, LuSun } from "react-icons/lu";
+import Logo from "./Logo";
+
+const navLinks = [
+  { name: "Inicio", href: "#inicio" },
+  { name: "La problemática", href: "#problematica" },
+  { name: "Cómo funciona", href: "#como-funciona" },
+  { name: "Para quién", href: "#para-quien" },
+  { name: "Recursos", href: "#recursos" },
+  { name: "Preguntas", href: "#preguntas" },
+];
+
+// Botones del header: píldoras translúcidas con borde fino y el ícono en celeste
+const baseButton =
+  "flex items-center justify-center h-10 rounded-full border border-white/25 bg-white/5 text-white backdrop-blur-sm transition-all duration-200 hover:bg-white/15 hover:border-white/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forma-cyan focus-visible:ring-offset-2 focus-visible:ring-offset-forma-navy";
+const pillButton = `${baseButton} gap-2 px-4 font-raleway font-medium text-[0.9rem] tracking-wide`;
+const iconButton = `${baseButton} w-10`;
+const iconClass = "text-[1.15rem] text-forma-cyan";
 
 export default function Header() {
-  const { speak } = useSettings();
+  const { speak, theme, handleThemeChange } = useSettings();
+  const isDark = theme === "dark";
 
   const handleLeerPagina = () => {
     speak("La educación formoseña, sin barreras. FormA es una plataforma que convierte los materiales escolares en versiones accesibles.");
   };
 
-  const navLinks = [
-    { name: "Inicio", href: "#inicio" },
-    { name: "La problemática", href: "#problematica" },
-    { name: "Cómo funciona", href: "#como-funciona" },
-    { name: "Para quién", href: "#para-quien" },
-    { name: "Recursos", href: "#recursos" },
-    { name: "Preguntas", href: "#preguntas" },
-    { name: "Contacto", href: "#contacto" },
-  ];
-
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 w-full bg-forma-dark/95 backdrop-blur-md border-b border-forma-card">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
-        {/* =========================================
-            BLOQUE ÚNICO: SIEMPRE VISIBLE
-        ========================================= */}
-        <div className="flex items-center justify-between h-16 w-full">
-          
-          {/* LOGO */}
-          <div className="flex items-center gap-2 shrink-0">
-            <div className="w-6 h-8 flex items-center justify-center text-forma-teal">
-              <svg viewBox="0 0 24 24" fill="currentColor" className="w-full h-full">
-                <path d="M12 2C10.34 2 9 3.34 9 5C9 6.66 10.34 8 12 8C13.66 8 15 6.66 15 5C15 3.34 13.66 2 12 2ZM16 10H8C5.79 10 4 11.79 4 14V22H6V16H18V22H20V14C20 11.79 18.21 10 16 10Z" />
-              </svg>
-            </div>
-            <span className="text-xl font-serif tracking-wide text-white hidden sm:block">
-              FormA
-            </span>
-          </div>
+    <>
+    <header className="w-full bg-forma-navy">
+      <div className="max-w-[1210px] mx-auto px-4 sm:px-6">
+        {/* Fila superior: logo y acciones */}
+        <div className="flex items-center justify-between gap-4 pt-2 pb-3">
+          <Link to="/" aria-label="FormA, ir al inicio">
+            <Logo />
+          </Link>
 
-          {/* NAVEGACIÓN */}
-          <nav className="hidden lg:flex items-center gap-6 overflow-hidden">
-            {navLinks.map((link) => (
-              <a 
-                key={link.name} 
-                href={link.href} 
-                className="text-sm font-medium text-teal-50/80 hover:text-forma-teal whitespace-nowrap transition-colors"
-              >
-                {link.name}
-              </a>
-            ))}
-          </nav>
-
-          {/* BOTONES DE ACCIÓN */}
-          <div className="flex items-center gap-2 shrink-0">
-            <Link
-              to="/settings"
-              aria-label="Ir a la configuración de accesibilidad"
-              className="flex items-center gap-2 h-10 px-4 rounded-full border border-forma-teal/40 hover:bg-forma-card transition-colors text-sm font-medium text-white"
-            >
-              <FaSlidersH className="text-forma-teal text-lg" aria-hidden="true" />
-              <span className="hidden md:inline">Ajustes</span>
-            </Link>
-
-            <button
-              onClick={handleLeerPagina}
-              aria-label="Escuchar el contenido de esta página"
-              className="flex items-center gap-2 h-10 px-4 rounded-full border border-forma-teal/40 hover:bg-forma-card transition-colors text-sm font-medium text-white"
-            >
-              <FaVolumeUp className="text-forma-teal text-lg" aria-hidden="true" />
+          <div className="flex items-center gap-2.5">
+            <button onClick={handleLeerPagina} aria-label="Escuchar el contenido de esta página" className={pillButton}>
+              <LuVolume2 className={iconClass} strokeWidth={1.75} aria-hidden="true" />
               <span className="hidden md:inline">Escuchar esta página</span>
             </button>
+            <Link to="/settings" aria-label="Ir a los ajustes de accesibilidad" className={pillButton}>
+              <LuSlidersHorizontal className={iconClass} strokeWidth={1.75} aria-hidden="true" />
+              <span className="hidden md:inline">Ajustes</span>
+            </Link>
+            {/* Tema: solo el ícono (el nombre queda en aria-label y en el tooltip) */}
+            <button
+              onClick={() => handleThemeChange(isDark ? "light" : "dark")}
+              aria-label={isDark ? "Activar modo claro" : "Activar modo oscuro"}
+              title={isDark ? "Modo claro" : "Modo oscuro"}
+              aria-pressed={isDark}
+              className={`${iconButton} group`}
+            >
+              {isDark
+                ? <LuSun className={`${iconClass} transition-transform duration-500 group-hover:rotate-90`} strokeWidth={1.75} aria-hidden="true" />
+                : <LuMoon className={`${iconClass} transition-transform duration-500 group-hover:-rotate-12`} strokeWidth={1.75} aria-hidden="true" />}
+            </button>
           </div>
-          
         </div>
 
+        {/* Línea divisoria */}
+        <div className="h-px bg-white/55" />
       </div>
     </header>
+
+    {/* Navegación: queda fija arriba al scrollear (hermana del header para que sticky funcione en toda la página) */}
+    <div className="sticky top-0 z-40 w-full bg-forma-navy dark:bg-forma-navy/90 dark:backdrop-blur-md border-b border-white/10 shadow-[0_4px_20px_rgba(0,0,0,0.15)]">
+      <nav aria-label="Secciones de la página" className="max-w-[1210px] mx-auto flex flex-wrap justify-around gap-x-6 gap-y-2 py-5 px-8 lg:px-16">
+        {navLinks.map((link) => (
+          <a
+            key={link.name}
+            href={link.href}
+            className="font-raleway text-[1rem] text-white hover:text-forma-cyan whitespace-nowrap transition-colors"
+          >
+            {link.name}
+          </a>
+        ))}
+      </nav>
+    </div>
+    </>
   );
 }

@@ -22,7 +22,7 @@ export default function RootLayout() {
 
     return (
         <div
-            className="relative w-full min-h-screen overflow-x-hidden bg-forma-dark"
+            className="relative w-full min-h-screen overflow-x-clip bg-forma-dark"
             onMouseMove={handleMouseMove}
         >
             {/* BOTÓN FLOTANTE GLOBAL DE LA LUPA */}

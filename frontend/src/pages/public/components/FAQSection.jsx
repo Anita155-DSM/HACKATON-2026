@@ -1,50 +1,30 @@
+import { LuUserPlus, LuWifiOff, LuLanguages, LuShieldCheck } from "react-icons/lu";
+import SectionBadge from "./SectionBadge";
+import IconBadge from "./IconBadge";
+
+const faqs = [
+    { icon: LuUserPlus, question: "¿Tengo que registrarme?", answer: "No. Entrás y usás los materiales sin crear una cuenta." },
+    { icon: LuWifiOff, question: "¿Funciona sin internet?", answer: "Sí. Descargás el material una vez y lo usás sin conexión." },
+    { icon: LuLanguages, question: "¿Quién traduce al wichí?", answer: "Una persona de la comunidad. Por ahora: Traducción pendiente – Simulado." },
+    { icon: LuShieldCheck, question: "¿Me piden datos de salud?", answer: "No. FormA nunca te pide datos de salud." },
+];
+
 export default function FAQSection() {
-    const faqs = [
-        {
-            question: "¿Tengo que registrarme?",
-            answer: "No. Entrás y usás los materiales sin crear una cuenta."
-        },
-        {
-            question: "¿Funciona sin internet?",
-            answer: "Sí. Descargás el material una vez y lo usás sin conexión."
-        },
-        {
-            question: "¿Quién traduce al wichí?",
-            answer: "Una persona de la comunidad. Por ahora: Traducción pendiente - Simulado."
-        },
-        {
-            question: "¿Me piden datos de salud?",
-            answer: "No. FormA nunca te pide datos de salud."
-        }
-    ];
-
     return (
-        <section id="preguntas" className="py-24 lg:py-32 bg-[#F8FAFC] text-gray-900">
-            <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        <section id="preguntas" className="bg-white dark:bg-forma-night font-raleway pt-20 pb-16">
+            <div className="max-w-[1232px] mx-auto px-4 sm:px-6 flex flex-col items-center">
 
-                {/* Encabezado Centrado */}
-                <div className="text-center mb-16">
-                    <span className="inline-block px-5 py-1.5 bg-[#BDE0FE] text-[#023E8A] font-bold rounded-full text-sm tracking-wide mb-6 uppercase">
-                        Preguntas
-                    </span>
-                    <h2 className="text-4xl md:text-5xl font-serif text-[#041E2A]">
-                        Preguntas frecuentes
-                    </h2>
-                </div>
+                <SectionBadge className="px-16">Preguntas</SectionBadge>
+                <h2 className="mt-5 text-forma-ink dark:text-white text-[2.1rem] text-center">Preguntas frecuentes</h2>
 
-                {/* Grilla de Tarjetas (2 columnas) */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
-                    {faqs.map((faq, index) => (
-                        <div
-                            key={index}
-                            className="bg-white border border-gray-100 shadow-sm rounded-[1.25rem] p-8 flex flex-col justify-center"
-                        >
-                            <h3 className="text-[1.15rem] font-bold text-[#041E2A] mb-3">
+                <div className="mt-9 w-full grid grid-cols-1 md:grid-cols-2 gap-5">
+                    {faqs.map((faq) => (
+                        <div key={faq.question} className="bg-white rounded-[20px] shadow-soft border border-[#f1f3f5] dark:bg-forma-midnight dark:border-forma-line dark:shadow-none px-7 pt-6 pb-10 min-h-[170px]">
+                            <h3 className="flex items-center gap-3 text-forma-primary dark:text-forma-cyan font-bold text-[1.1rem]">
+                                <IconBadge icon={faq.icon} />
                                 {faq.question}
                             </h3>
-                            <p className="text-gray-600 leading-relaxed">
-                                {faq.answer}
-                            </p>
+                            <p className="mt-4 text-forma-ink dark:text-slate-300 text-[1rem] leading-snug">{faq.answer}</p>
                         </div>
                     ))}
                 </div>

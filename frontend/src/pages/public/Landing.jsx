@@ -8,13 +8,9 @@ import FooterSection from "./components/FooterSection";
 
 export default function Landing() {
   return (
-    <div className="min-h-screen bg-forma-dark text-white selection:bg-forma-teal selection:text-forma-dark flex flex-col">
-      {/* 1. El Header fijo que flota sobre todo */}
+    <div className="min-h-screen bg-white text-forma-ink dark:bg-forma-night dark:text-white font-raleway selection:bg-forma-cyan selection:text-forma-navy flex flex-col">
       <Header />
-      {/* 2. TU DIV ESPACIADOR: Ocupa los 64px (h-16) exactos del Header para que el contenido no quede tapado */}
-      <div className="h-16 w-full shrink-0"></div>
 
-      {/* 3. El contenido real de la página */}
       <main className="flex-1">
         <HeroSection />
         <ProblemSection />
@@ -24,7 +20,6 @@ export default function Landing() {
       </main>
 
       <FooterSection />
-
     </div>
   );
 }
