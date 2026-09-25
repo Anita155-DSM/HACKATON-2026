@@ -1,13 +1,32 @@
-import { useContext } from "react";
-import { AuthContext } from "../context/AuthContext";
+import { create } from 'zustand';
 
-export const useAuth = () => {
-  const context = useContext(AuthContext);
+// ¡Acá está la magia! Solo renombramos "useAuthStore" a "useAuth"
+export const useAuth = create((set) => ({
+  user: JSON.parse(localStorage.getItem('user')) || null,
+  accessToken: localStorage.getItem('accessToken') || null,
 
-  // Seguridad: Evita que intentes usar el hook fuera del proveedor
-  if (!context) {
-    throw new Error("useAuth debe usarse dentro de un AuthProvider");
+  isAuthenticated: !!localStorage.getItem('accessToken'),
+  loading: false,
+
+  login: (userData, token) => {
+    localStorage.setItem('user', JSON.stringify(userData));
+    localStorage.setItem('accessToken', token);
+
+    set({
+      user: userData,
+      accessToken: token,
+      isAuthenticated: true
+    });
+  },
+
+  logout: () => {
+    localStorage.removeItem('user');
+    localStorage.removeItem('accessToken');
+
+    set({
+      user: null,
+      accessToken: null,
+      isAuthenticated: false
+    });
   }
-
-  return context; // Devuelve { user, isAuthenticated, loading, login, logout }
-};
+}));

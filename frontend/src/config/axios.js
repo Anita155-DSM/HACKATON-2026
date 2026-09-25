@@ -1,52 +1,40 @@
-import axios from 'axios';
+import axios from "axios";
+import { useAuth } from "../hooks/useAuth.js"; // Importamos tu store de Zustand
 
-// 1. Creamos la instancia base
 const clienteAxios = axios.create({
-  // Vite usa import.meta.env para las variables de entorno. 
-  // Si no existe, usamos localhost por defecto.
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3000/api'
+  // Mantené la URL que ya venías usando para tu backend
+  baseURL: import.meta.env.VITE_API_URL
 });
 
-// 2. Interceptor de PETICIÓN (Request)
-// Se ejecuta siempre ANTES de que la petición salga hacia el backend
+// 1. INTERCEPTOR DE PETICIONES (Lo que enviamos al backend)
 clienteAxios.interceptors.request.use(
   (config) => {
-    // Buscamos el token en el almacenamiento del navegador
-    const token = localStorage.getItem('token');
-
-    // Si hay token, se lo inyectamos a los Headers en formato Bearer
+    // Buscamos el token fresco justo antes de que la petición salga
+    const token = localStorage.getItem("accessToken");
     if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+      config.headers.Authorization = `Bearer ${token}`; // Se lo inyectamos a los headers
     }
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
-// 3. Interceptor de RESPUESTA (Response)
-// Se ejecuta cuando el backend nos contesta, ANTES de que llegue a tus componentes
+// 2. INTERCEPTOR DE RESPUESTAS (Lo que el backend nos devuelve)
 clienteAxios.interceptors.response.use(
-  (response) => {
-    // Si todo salió bien (código 200), dejamos pasar la respuesta tal cual
-    return response;
-  },
+  (response) => response,
   (error) => {
-    // Solo expulsamos en el 401 (No Autorizado / Token Vencido)
-    if (error.response && error.response.status === 401) {
-      console.error("Sesión expirada o token inválido.");
-      localStorage.removeItem('token');
-      if (window.location.pathname !== '/login') {
-        window.location.href = '/login';
+    // Si el backend rechaza la petición por falta de permisos (401)
+    if (error.response?.status === 401) {
+      console.warn("Sesión expirada o token inválido detectado por Axios.");
+
+      // ¡La magia de Zustand! Ejecutamos tu función de limpieza global desde afuera de React
+      useAuth.getState().logout();
+
+      // Redirigimos al usuario al login si no está ya ahí
+      if (window.location.pathname !== "/login") {
+        window.location.href = "/login";
       }
     }
-
-    // Si es 403 (Prohibido / Sin Permisos), NO borramos el token
-    if (error.response && error.response.status === 403) {
-      console.warn("Intento de acceso a ruta sin permisos suficientes.");
-    }
-
     return Promise.reject(error);
   }
 );

@@ -1,0 +1,509 @@
+@import 'tailwindcss';
+@import '@fontsource/atkinson-hyperlegible/latin-400.css';
+@import '@fontsource/atkinson-hyperlegible/latin-700.css';
+/* latin-ext solo se descarga si aparece un carácter que lo necesita (algunas grafías del wichí) */
+@import '@fontsource/atkinson-hyperlegible/latin-ext-400.css';
+@import '@fontsource/atkinson-hyperlegible/latin-ext-700.css';
+
+/* ------------------------------------------------------------------
+   Tokens. Los colores cambian según las preferencias (data-* en <html>),
+   así que los componentes nunca usan colores sueltos: solo estos nombres.
+
+   Paleta base del equipo: #EEF5FF  #FFFFFF  #5CE1E6  #B0E0FC
+   Como los cuatro son claros, el texto usa azul marino (#0B2540) para
+   llegar a 4.5:1 o más en cualquier fondo de la paleta.
+
+   Regla de bordes redondeados (única en todo el sitio):
+   controles (botones, campos, chips) = 14px · contenedores = 22px.
+   ------------------------------------------------------------------ */
+
+:root {
+  --text-scale: 1;
+  --c-bg: #eef5ff;
+  --c-surface: #ffffff;
+  --c-surface-2: #f6faff;
+  --c-accent: #5ce1e6;
+  --c-accent-strong: #2bbfc6;
+  --c-soft: #b0e0fc;
+  --c-ink: #0b2540;
+  --c-ink-2: #35506b;
+  --c-on-accent: #0b2540;
+  --c-line: #c9dcef;
+  --c-control-line: #5b7590;
+  --c-link: #0b5a78;
+  --c-focus: #0b2540;
+  --c-danger: #a61b1b;
+  --c-danger-bg: #fdecec;
+  --c-ok: #0f6b3a;
+  --c-ok-bg: #e5f6ec;
+  --c-warn: #7a4b00;
+  --c-warn-bg: #fff4dc;
+  --c-highlight: #b0e0fc;
+  --c-tint-1: #b0e0fc;
+  --c-tint-2: #5ce1e6;
+  --shadow-tint: 11 37 64;
+  color-scheme: light;
+}
+
+:root[data-theme='dark'] {
+  --c-bg: #0b1b2b;
+  --c-surface: #10263a;
+  --c-surface-2: #16324a;
+  --c-accent: #5ce1e6;
+  --c-accent-strong: #8aeef1;
+  --c-soft: #b0e0fc;
+  --c-ink: #eef5ff;
+  --c-ink-2: #b0e0fc;
+  --c-on-accent: #0b2540;
+  --c-line: #2a4661;
+  --c-control-line: #7d9bb8;
+  --c-link: #5ce1e6;
+  --c-focus: #5ce1e6;
+  --c-danger: #ffb4ab;
+  --c-danger-bg: #3b1518;
+  --c-ok: #8be0b0;
+  --c-ok-bg: #11321f;
+  --c-warn: #ffd58a;
+  --c-warn-bg: #3a2a0c;
+  --c-highlight: #1f5673;
+  --c-tint-1: #17415c;
+  --c-tint-2: #0f4f58;
+  --shadow-tint: 0 8 16;
+  color-scheme: dark;
+}
+
+/* Alto contraste: bordes gruesos, sin grises intermedios, enlaces subrayados */
+:root[data-contrast='high'] {
+  --c-bg: #ffffff;
+  --c-surface: #ffffff;
+  --c-surface-2: #ffffff;
+  --c-soft: #ffffff;
+  --c-ink: #000a14;
+  --c-ink-2: #000a14;
+  --c-line: #000a14;
+  --c-control-line: #000a14;
+  --c-link: #002f6c;
+  --c-focus: #000a14;
+  --c-accent: #5ce1e6;
+  --c-on-accent: #000a14;
+  --c-highlight: #ffe45c;
+  --c-tint-1: #ffffff;
+  --c-tint-2: #ffffff;
+}
+
+:root[data-contrast='high'][data-theme='dark'] {
+  --c-bg: #000000;
+  --c-surface: #000000;
+  --c-surface-2: #000000;
+  --c-soft: #000000;
+  --c-ink: #ffffff;
+  --c-ink-2: #ffffff;
+  --c-line: #ffffff;
+  --c-control-line: #ffffff;
+  --c-link: #5ce1e6;
+  --c-focus: #ffe45c;
+  --c-accent: #5ce1e6;
+  --c-on-accent: #000000;
+  --c-highlight: #5c4d00;
+  --c-tint-1: #000000;
+  --c-tint-2: #000000;
+}
+
+@theme inline {
+  --font-sans: 'Atkinson Hyperlegible', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --color-bg: var(--c-bg);
+  --color-surface: var(--c-surface);
+  --color-surface-2: var(--c-surface-2);
+  --color-accent: var(--c-accent);
+  --color-accent-strong: var(--c-accent-strong);
+  --color-soft: var(--c-soft);
+  --color-ink: var(--c-ink);
+  --color-ink-2: var(--c-ink-2);
+  --color-on-accent: var(--c-on-accent);
+  --color-line: var(--c-line);
+  --color-control: var(--c-control-line);
+  --color-link: var(--c-link);
+  --color-focus: var(--c-focus);
+  --color-danger: var(--c-danger);
+  --color-danger-bg: var(--c-danger-bg);
+  --color-ok: var(--c-ok);
+  --color-ok-bg: var(--c-ok-bg);
+  --color-warn: var(--c-warn);
+  --color-warn-bg: var(--c-warn-bg);
+  --color-highlight: var(--c-highlight);
+  --color-tint-1: var(--c-tint-1);
+  --color-tint-2: var(--c-tint-2);
+  --radius-control: 14px;
+  --radius-box: 22px;
+}
+
+/* Variantes para escribir estilos que dependen de una preferencia */
+@custom-variant focus-mode (&:where([data-focus='on'], [data-focus='on'] *));
+@custom-variant hc (&:where([data-contrast='high'], [data-contrast='high'] *));
+
+/* ------------------------------------------------------------------
+   Base
+   ------------------------------------------------------------------ */
+
+/* 18px de base (requisito del documento) multiplicado por el tamaño elegido.
+   Todo el sitio usa rem, así que crece entero: texto, botones y espacios. */
+/* Base en @layer base: así las clases de componentes (.btn, etc.) siempre le ganan */
+@layer base {
+  html {
+    font-size: calc(112.5% * var(--text-scale));
+    -webkit-text-size-adjust: 100%;
+    scroll-padding-top: 5rem;
+  }
+
+  body {
+    background: var(--c-bg);
+    color: var(--c-ink);
+    font-family: var(--font-sans);
+    line-height: 1.6;
+    min-height: 100dvh;
+    text-rendering: optimizeLegibility;
+  }
+
+  a {
+    color: var(--c-link);
+    text-underline-offset: 0.2em;
+    text-decoration-thickness: 0.08em;
+  }
+
+  ::selection {
+    background: var(--c-soft);
+    color: #0b2540;
+  }
+
+  /* Foco siempre visible y grueso (WCAG 2.4.7 y 2.4.13) */
+  :focus-visible {
+    outline: 3px solid var(--c-focus);
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+
+  [data-contrast='high'] :focus-visible {
+    outline-width: 4px;
+  }
+
+  /* Los fieldset tienen min-width: min-content por defecto y desbordan en pantallas chicas */
+  fieldset {
+    min-inline-size: 0;
+  }
+
+  [data-contrast='high'] a:not(.btn) {
+    text-decoration: underline;
+    text-decoration-thickness: 0.12em;
+  }
+}
+
+/* Letra más legible: espaciado según WCAG 1.4.12 */
+[data-readable='on'] body {
+  letter-spacing: 0.04em;
+  word-spacing: 0.14em;
+  line-height: 1.85;
+}
+[data-readable='on'] p,
+[data-readable='on'] li {
+  margin-bottom: 0.5em;
+}
+
+/* Menos movimiento: por preferencia del sistema o del menú */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+[data-motion='reduce'] *,
+[data-motion='reduce'] *::before,
+[data-motion='reduce'] *::after,
+[data-focus='on'] *,
+[data-focus='on'] *::before,
+[data-focus='on'] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+}
+
+/* Modo concentración: oculta todo lo que no es el contenido */
+[data-focus='on'] [data-nonessential] {
+  display: none !important;
+}
+[data-focus='on'] body {
+  --c-bg: var(--c-surface);
+}
+
+/* Borde visible en alto contraste para todo lo que es una caja */
+[data-contrast='high'] .box,
+[data-contrast='high'] .control {
+  border: 2px solid var(--c-line) !important;
+}
+
+/* ------------------------------------------------------------------
+   Componentes base (clases cortas para no repetir 15 utilidades)
+   ------------------------------------------------------------------ */
+
+@layer components {
+  .wrap {
+    width: 100%;
+    max-width: 72rem;
+    margin-inline: auto;
+    padding-inline: 1rem;
+  }
+  @media (min-width: 768px) {
+    .wrap {
+      padding-inline: 2rem;
+    }
+  }
+
+  .reading {
+    max-width: 38rem;
+  }
+  [data-focus='on'] .reading {
+    max-width: 34rem;
+  }
+
+  .box {
+    background: var(--c-surface);
+    border: 1px solid var(--c-line);
+    border-radius: var(--radius-box);
+  }
+
+  /* Botones: mínimo 48 x 48 px, una sola línea, empuje táctil al tocar */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 2.75rem; /* 49.5px con base 18px */
+    min-width: 2.75rem;
+    padding: 0.6rem 1.15rem;
+    border-radius: var(--radius-control);
+    font-weight: 700;
+    line-height: 1.2;
+    text-align: center;
+    text-decoration: none;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition:
+      transform 0.15s cubic-bezier(0.16, 1, 0.3, 1),
+      background-color 0.15s ease,
+      border-color 0.15s ease;
+  }
+  .btn:active {
+    transform: translateY(1px) scale(0.98);
+  }
+  .btn:disabled,
+  .btn[aria-disabled='true'] {
+    opacity: 0.55;
+    cursor: not-allowed;
+    transform: none;
+  }
+  .btn-primary {
+    background: var(--c-accent);
+    color: var(--c-on-accent);
+    border-color: var(--c-accent);
+  }
+  .btn-primary:hover {
+    background: var(--c-accent-strong);
+    border-color: var(--c-accent-strong);
+  }
+  [data-contrast='high'] .btn-primary {
+    border-color: var(--c-ink);
+  }
+  .btn-secondary {
+    background: var(--c-surface);
+    color: var(--c-ink);
+    border-color: var(--c-control-line);
+  }
+  .btn-secondary:hover {
+    background: var(--c-surface-2);
+    border-color: var(--c-ink);
+  }
+  .btn-ghost {
+    background: transparent;
+    color: var(--c-ink);
+  }
+  .btn-ghost:hover {
+    background: var(--c-surface-2);
+  }
+  .btn-danger {
+    background: var(--c-surface);
+    color: var(--c-danger);
+    border-color: var(--c-danger);
+  }
+  .btn-danger:hover {
+    background: var(--c-danger-bg);
+  }
+  .btn-lg {
+    min-height: 3.5rem;
+    padding: 0.85rem 1.5rem;
+    font-size: 1.1rem;
+  }
+
+  /* Campos de formulario: label arriba, ayuda y error abajo */
+  .field {
+    display: grid;
+    gap: 0.4rem;
+  }
+  .label {
+    font-weight: 700;
+  }
+  .hint {
+    color: var(--c-ink-2);
+    font-size: 0.9rem;
+  }
+  .error-text {
+    color: var(--c-danger);
+    font-size: 0.9rem;
+    font-weight: 700;
+  }
+  .input {
+    width: 100%;
+    min-height: 2.75rem;
+    padding: 0.6rem 0.85rem;
+    border-radius: var(--radius-control);
+    border: 2px solid var(--c-control-line);
+    background: var(--c-surface);
+    color: var(--c-ink);
+    font: inherit;
+  }
+  .input::placeholder {
+    color: var(--c-ink-2);
+    opacity: 1;
+  }
+  .input[aria-invalid='true'] {
+    border-color: var(--c-danger);
+  }
+  textarea.input {
+    min-height: 9rem;
+    line-height: 1.6;
+    resize: vertical;
+  }
+  select.input {
+    appearance: none;
+    background-image: linear-gradient(45deg, transparent 50%, currentColor 50%),
+      linear-gradient(135deg, currentColor 50%, transparent 50%);
+    background-position:
+      calc(100% - 1.2rem) 55%,
+      calc(100% - 0.85rem) 55%;
+    background-size: 0.35rem 0.35rem;
+    background-repeat: no-repeat;
+    padding-right: 2.2rem;
+  }
+
+  /* Chips seleccionables (radios y checkboxes con aspecto de botón) */
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    min-height: 2.75rem;
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-control);
+    border: 2px solid var(--c-control-line);
+    background: var(--c-surface);
+    color: var(--c-ink);
+    font-weight: 700;
+    cursor: pointer;
+    text-align: center;
+  }
+  @media (min-width: 768px) {
+    .btn,
+    .chip {
+      white-space: nowrap;
+    }
+  }
+  .chip[aria-pressed='true'],
+  .chip[aria-checked='true'],
+  .chip[aria-selected='true'],
+  .chip:has(input:checked) {
+    background: var(--c-soft);
+    border-color: var(--c-ink);
+    color: #0b2540;
+  }
+  [data-contrast='high'] .chip[aria-pressed='true'],
+  [data-contrast='high'] .chip[aria-checked='true'],
+  [data-contrast='high'] .chip[aria-selected='true'],
+  [data-contrast='high'] .chip:has(input:checked) {
+    background: var(--c-ink);
+    color: var(--c-bg);
+  }
+  .chip:has(input:focus-visible) {
+    outline: 3px solid var(--c-focus);
+    outline-offset: 3px;
+  }
+
+  /* Texto de lectura: resaltado de la frase que se está leyendo */
+  .reading-text p,
+  .reading-text li {
+    margin-bottom: 0.9em;
+  }
+  .reading-text h2,
+  .reading-text h3 {
+    font-weight: 700;
+    font-size: 1.25rem;
+    margin: 1.4em 0 0.5em;
+    line-height: 1.3;
+  }
+  .reading-text ul {
+    list-style: disc;
+    padding-left: 1.4em;
+  }
+  .sentence-active {
+    background: var(--c-highlight);
+    color: var(--c-ink);
+    border-radius: 4px;
+    box-shadow: 0 0 0 3px var(--c-highlight);
+  }
+  mark.term {
+    background: transparent;
+    color: inherit;
+    border-bottom: 3px solid var(--c-accent-strong);
+    padding: 0 1px;
+  }
+
+  .sr-only-focusable:not(:focus) {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  .skeleton {
+    background: linear-gradient(90deg, var(--c-surface-2), var(--c-line), var(--c-surface-2));
+    background-size: 200% 100%;
+    border-radius: 10px;
+    animation: shimmer 1.6s ease-in-out infinite;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: -100% 0;
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.rise {
+  animation: rise 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+}

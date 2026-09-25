@@ -20,15 +20,68 @@ input:-webkit-autofill:active {
     }
 }
 
-/* Estilos de accesibilidad para la hackatón */
-.high-contrast {
-    /* Filtro agresivo que maximiza el contraste de toda la web sin romper la UI */
-    filter: contrast(130%) saturate(120%);
+/* ==========================================================================
+MODO ALTO CONTRASTE (ACCESIBILIDAD AVANZADA)
+==========================================================================*/
+
+/* 1. Tipografía: Todo en Negrita y letras ligeramente más separadas para legibilidad */
+.high-contrast * {
+    font-weight: 700 !important;
+    letter-spacing: 0.3px !important;
 }
 
-.high-contrast p,
-.high-contrast span {
-    /* Oscurece todos los textos grises para hacerlos más legibles */
-    color: #111827 !important;
-    font-weight: 500;
+/* 2. Erradicar los grises: Textos secundarios puros */
+.high-contrast .text-gray-400,
+.high-contrast .text-gray-500,
+.high-contrast .text-gray-600 {
+    color: #000000 !important;
+}
+
+.dark.high-contrast .text-gray-400,
+.dark.high-contrast .text-gray-500,
+.dark.high-contrast .text-gray-600 {
+    color: #ffffff !important;
+}
+
+/* 3. Tarjetas, Inputs y Botones: Bordes gruesos de 2px y SIN sombras */
+.high-contrast .rounded-md,
+.high-contrast .rounded-lg,
+.high-contrast .rounded-xl {
+    box-shadow: none !important;
+    border: 2px solid #000000 !important;
+}
+
+.dark.high-contrast .rounded-md,
+.dark.high-contrast .rounded-lg,
+.dark.high-contrast .rounded-xl {
+    border: 2px solid #ffffff !important;
+}
+
+/* 4. Enlaces explícitamente subrayados */
+.high-contrast a {
+    text-decoration: underline !important;
+    text-underline-offset: 4px !important;
+    text-decoration-thickness: 2px !important;
+}
+
+/* 5. Íconos (React Icons): Darles más grosor aplicando 'stroke' */
+.high-contrast svg {
+    stroke: currentColor !important;
+    stroke-width: 1px !important;
+}
+
+/* 6. Foco de Teclado (Tab): Outline amarillo/negro inconfundible */
+.high-contrast *:focus {
+    outline: 4px solid #FFD700 !important;
+    /* Amarillo vibrante */
+    outline-offset: 4px !important;
+    background-color: #000 !important;
+    color: #FFF !important;
+}
+
+.dark.high-contrast *:focus {
+    outline: 4px solid #00FFFF !important;
+    /* Cian vibrante para modo oscuro */
+    background-color: #FFF !important;
+    color: #000 !important;
 }
