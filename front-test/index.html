@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Puente: materiales escolares accesibles</title>
+    <meta name="description" content="Materiales escolares para que todos puedan aprender, en su forma y en su lengua. Texto, audio, lectura fácil y wichí, también sin internet." />
+    <meta name="theme-color" content="#EEF5FF" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0B1B2B" media="(prefers-color-scheme: dark)" />
+    <link rel="icon" href="/icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/icon.svg" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="Puente" />
+    <script>
+      // Aplica las preferencias guardadas antes de pintar, para que no haya parpadeo.
+      (function () {
+        try {
+          var p = JSON.parse(localStorage.getItem('puente:prefs') || '{}');
+          var d = document.documentElement;
+          var dark = p.theme === 'dark' || ((!p.theme || p.theme === 'system') && matchMedia('(prefers-color-scheme: dark)').matches);
+          d.dataset.theme = dark ? 'dark' : 'light';
+          if (p.contrast) d.dataset.contrast = 'high';
+          if (p.focusMode) d.dataset.focus = 'on';
+          if (p.readableFont) d.dataset.readable = 'on';
+          if (p.reduceMotion) d.dataset.motion = 'reduce';
+          if (p.textScale) d.style.setProperty('--text-scale', p.textScale);
+        } catch (e) {}
+      })();
+    </script>
+    <noscript>
+      <style>
+        body{font:18px/1.6 system-ui,sans-serif;background:#EEF5FF;color:#0B2540;margin:0;padding:16px}
+        main{max-width:44rem;margin:0 auto}
+        a{color:#0B4F6C}
+        .ns-btn{display:inline-block;min-height:48px;padding:12px 20px;margin:6px 6px 6px 0;border-radius:12px;background:#5CE1E6;color:#0B2540;font-weight:700;text-decoration:none}
+      </style>
+    </noscript>
+  </head>
+  <body>
+    <div id="root"></div>
+    <noscript>
+      <main>
+        <h1>Puente: materiales escolares para que todos puedan aprender, en su forma y en su lengua</h1>
+        <p>El docente sube su material. Se crean versiones accesibles: texto claro, audio, lectura fácil y wichí. El alumno las usa incluso sin internet.</p>
+        <h2>¿Qué querés hacer?</h2>
+        <p>
+          <a class="ns-btn" href="/alumno">Soy alumno</a>
+          <a class="ns-btn" href="/docente">Soy profe o maestro</a>
+          <a class="ns-btn" href="/biblioteca">Explorar materiales</a>
+        </p>
+        <h2>Cómo funciona</h2>
+        <ol>
+          <li>El docente sube un PDF o un texto.</li>
+          <li>Se crean versiones accesibles: texto, audio y lectura fácil.</li>
+          <li>El alumno las usa en su celular, incluso sin internet.</li>
+        </ol>
+        <h2>Lenguas originarias</h2>
+        <p>Las traducciones al wichí las hacen o validan personas de la comunidad. El sistema no traduce solo.</p>
+        <p>Para usar todas las funciones (leer en voz alta, guardar sin internet, preferencias) hace falta activar JavaScript en el navegador.</p>
+      </main>
+    </noscript>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
