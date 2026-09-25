@@ -8,8 +8,9 @@ export const crearCursoRules = [
     .isLength({ max: 120 })
     .withMessage("El nombre es demasiado largo"),
   body("level")
-    .optional()
     .trim()
+    .notEmpty()
+    .withMessage("El nivel es obligatorio")
     .isIn(["primaria", "secundaria"])
     .withMessage("El nivel debe ser 'primaria' o 'secundaria'"),
   body("year")

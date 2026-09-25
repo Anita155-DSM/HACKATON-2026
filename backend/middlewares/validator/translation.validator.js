@@ -17,4 +17,8 @@ export const crearTraduccionRules = [
     .optional()
     .isBoolean()
     .withMessage("validated debe ser true o false"),
+  body("simulated")
+    .optional()
+    .isBoolean()
+    .withMessage("simulated debe ser true o false"),
 ];

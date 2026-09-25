@@ -15,7 +15,7 @@ const storage = multer.diskStorage({
     };
     const ext = map[file.mimetype] || "webm";
     const nombre = `tr-${Date.now()}-${Math.round(Math.random() * 1e6)}.${ext}`;
-    cb(null, nombre);
+    cb(null, nombre)
   },
 });
 
