@@ -30,8 +30,9 @@ const Course = sequelize.define (
       type: DataTypes.STRING,
       allowNull: true
     },
-    userId: {
-      type: DataTypes.INTEGER,
+    teacherId: {
+      type: DataTypes.UUID,
+      defaultValue:UUIDV4,
       allowNull: false
     },
   },
