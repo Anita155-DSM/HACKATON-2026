@@ -32,7 +32,6 @@ const Course = sequelize.define (
     },
     teacherId: {
       type: DataTypes.UUID,
-      defaultValue:UUIDV4,
       allowNull: false
     },
   },

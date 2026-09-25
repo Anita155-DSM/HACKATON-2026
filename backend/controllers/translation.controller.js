@@ -1,11 +1,14 @@
 import { Translation, Material } from "../models/index.js";
 
+// En multipart todo llega como texto: "true" / "false"
+const aBooleano = (valor) => valor === true || valor === "true";
+
 export const crearTraduccion = async (req, res) => {
   try {
     const { id } = req.params;
-    const { language, text, author, validated } = req.body;
+    const { language, text, author, validated, simulated } = req.body;
 
-    const material = await Material.findbyPk(id);
+    const material = await Material.findByPk(id);
     if (!material) {
       return res.status(404).json({
         exito: false,
@@ -16,27 +19,26 @@ export const crearTraduccion = async (req, res) => {
 
     const audioUrl = req.file ? `/uploads/audios/${req.file.filename}` : null;
 
-    const validado = validated === "true" || validated === true;
-
     const traduccion = await Translation.create({
       materialId: id,
       language,
       text,
       author,
-      validated: validado === "true" || validated === true,
-      simulated: simulated === "true" || simulated === true,
+      validated: aBooleano(validated),
+      simulated: aBooleano(simulated),
       audioUrl,
     });
 
     return res.status(201).json({
       exito: true,
-      mensaje: "Traduccion guardada",
+      mensaje: "Traducción guardada",
       data: { traduccion },
     });
   } catch (error) {
+    console.error("[translations] crearTraduccion:", error);
     return res.status(500).json({
       exito: false,
-      mensaje: "Error al guardar la traduccion.",
+      mensaje: "Error al guardar la traducción.",
       data: null,
     });
   }

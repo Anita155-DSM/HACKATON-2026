@@ -1,5 +1,4 @@
-import { Course, Material } from "./models/index.js";
-
+import { Course, Material } from "../models/index.js";
 
 async function generarCodigoUnico() {
   let code;
@@ -12,19 +11,18 @@ async function generarCodigoUnico() {
 export const crearCurso = async (req, res) => {
   try {
     const { name, level, year, subject } = req.body;
-  
-  const teacherId = req.user.id;
+    const teacherId = req.user.id;
+    const code = await generarCodigoUnico();
 
-  const code = await generarCodigoUnico();
+    const curso = await Course.create({ name, level, year, subject, code, teacherId });
 
-  const curso = await Course.create({ name, level, year, subject, code, teacherId });
-
-  return res.status(201).json({
-    exito: true,
-    mensaje: "Curso creado",
-    data: { curso },
+    return res.status(201).json({
+      exito: true,
+      mensaje: "Curso creado",
+      data: { curso },
     });
   } catch (error) {
+    console.error("[courses] crearCurso:", error);
     return res.status(500).json({
       exito: false,
       mensaje: "Error al crear el curso",
@@ -38,7 +36,7 @@ export const misCursos = async (req, res) => {
     const teacherId = req.user.id;
     const cursos = await Course.findAll({
       where: { teacherId },
-      oder: [["created_at", "DESC"]],
+      order: [["createdAt", "DESC"]],
     });
 
     return res.status(200).json({
@@ -47,6 +45,7 @@ export const misCursos = async (req, res) => {
       data: { cursos },
     });
   } catch (error) {
+    console.error("[courses] misCursos:", error);
     return res.status(500).json({
       exito: false,
       mensaje: "Error al obtener los cursos",
@@ -62,23 +61,33 @@ export const cursoPorCodigo = async (req, res) => {
     const curso = await Course.findOne({
       where: { code },
       attributes: ["id", "name", "code", "level", "year", "subject"],
-      include: [{ model: Material, as: "materials" }],
+      include: [
+        {
+          model: Material,
+          as: "materials",
+          // Ruta del archivo en el servidor y quién lo subió no se exponen.
+          // Los textos completos se piden con GET /api/materials/:id.
+          attributes: { exclude: ["originalFilePath", "createdBy", "accessibleText", "easyReadText"] },
+        },
+      ],
     });
 
     if (!curso) {
       return res.status(404).json({
         exito: false,
-        mensaje: "No existe un curso con ese codigo",
+        mensaje: "No existe un curso con ese código",
         data: null,
       });
     }
 
+    // Los materiales vienen adentro: data.curso.materials
     return res.status(200).json({
       exito: true,
       mensaje: "OK",
-      data: { curso, materiales },
+      data: { curso },
     });
   } catch (error) {
+    console.error("[courses] cursoPorCodigo:", error);
     return res.status(500).json({
       exito: false,
       mensaje: "Error al buscar el curso",
