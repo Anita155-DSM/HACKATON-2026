@@ -1,25 +1,27 @@
 import { useState, useEffect } from "react";
-import { useThemeStore } from "../store/themeStore";
+import { useThemeStore } from "../store/themeStore"; 
 
 export const useSettings = () => {
   const { theme, setTheme } = useThemeStore();
 
   const [contrast, setContrast] = useState(() => localStorage.getItem("contrast") === "true");
   const [sounds, setSounds] = useState(() => localStorage.getItem("sounds") !== "false");
-  
   const [volume, setVolume] = useState(() => {
     const saved = localStorage.getItem("volume");
     return saved !== null ? parseFloat(saved) : 0.8;
   });
-  
   const [readingMode, setReadingMode] = useState(() => localStorage.getItem("readingMode") === "true");
-  
   const [readingVolume, setReadingVolume] = useState(() => {
     const saved = localStorage.getItem("readingVolume");
     return saved !== null ? parseFloat(saved) : 1;
   });
-
   const [notifications, setNotifications] = useState(() => localStorage.getItem("notifications") !== "false");
+
+  // NUEVO: Tamaño de Interfaz (0 = 16px, 1 = 18px (Base accesible), 2 = 20px, 3 = 24px)
+  const [uiSize, setUiSize] = useState(() => {
+    const saved = localStorage.getItem("uiSize");
+    return saved !== null ? parseInt(saved) : 1; 
+  });
 
   useEffect(() => {
     localStorage.setItem("contrast", contrast);
@@ -29,6 +31,16 @@ export const useSettings = () => {
       document.documentElement.classList.remove("high-contrast");
     }
   }, [contrast]);
+
+  // NUEVO: Efecto para aplicar el tamaño de la interfaz
+  useEffect(() => {
+    localStorage.setItem("uiSize", uiSize);
+    // Solo escala si la Lupa NO está activada (la lupa fuerza su propio tamaño)
+    if (document.documentElement.getAttribute('data-lupa') !== 'true') {
+      const sizes = ["16px", "18px", "20px", "24px"];
+      document.documentElement.style.fontSize = sizes[uiSize];
+    }
+  }, [uiSize]);
 
   useEffect(() => { localStorage.setItem("sounds", sounds); }, [sounds]);
   useEffect(() => { localStorage.setItem("volume", volume); }, [volume]);
@@ -87,6 +99,7 @@ export const useSettings = () => {
     readingMode, toggleReading,
     readingVolume, setReadingVolume,
     notifications, setNotifications,
+    uiSize, setUiSize, // Exportamos la lógica visual
     speak
   };
 };
