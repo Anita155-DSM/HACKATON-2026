@@ -30,6 +30,11 @@ const Translation = sequelize.define(
       allowNull: false,
       defaultValue: false,
     },
+    simulated: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+    },
     author: {
       type: DataTypes.STRING,
       allowNull: true,

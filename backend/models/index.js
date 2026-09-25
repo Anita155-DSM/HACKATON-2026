@@ -1,6 +1,6 @@
 import { sequelize } from "../config/database.js";
 
-import User from "./user.models.js";
+import { User } from "./user.models.js";
 import Course from "./course.models.js";
 import Material from "./material.models.js";
 import Translation from "./translation.models.js";

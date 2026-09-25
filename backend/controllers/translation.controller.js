@@ -23,7 +23,8 @@ export const crearTraduccion = async (req, res) => {
       language,
       text,
       author,
-      validated: validado,
+      validated: validado === "true" || validated === true,
+      simulated: simulated === "true" || simulated === true,
       audioUrl,
     });
 
